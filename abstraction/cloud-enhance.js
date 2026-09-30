@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const CLOUD_VERSION='v2026.09.29.10';
+const CLOUD_VERSION='v2026.09.30.1';
 const CLOUD_SB_URL='https://gjlhegrcmaclikeoeonh.supabase.co';
 const CLOUD_SB_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9';
 const CLOUD_SYSTEMS=['Engine','Fuel System','Cooling','Exhaust','Electrical','Instrumentation','Drivetrain','Suspension','Steering','Brakes','Wheels & Tires','Controls','Safety','Chassis / Body','General / Miscellaneous'];
@@ -25,8 +25,7 @@ async function cloudEnsureSession(){
   return cloudSession;
 }
 async function cloudFreshRead(sess){
-  const future=new Date(Date.now()+60000).toISOString();
-  const q='select=state,updated_at&user_id=eq.'+encodeURIComponent(sess.user.id)+'&updated_at=lt.'+encodeURIComponent(future)+'&order=updated_at.desc&limit=1';
+  const q='select=state,updated_at&user_id=eq.'+encodeURIComponent(sess.user.id)+'&limit=1';
   const r=await fetch(CLOUD_SB_URL+'/rest/v1/owner_manuals?'+q,{cache:'no-store',headers:{apikey:CLOUD_SB_KEY,Authorization:'Bearer '+sess.access_token,Accept:'application/json','Cache-Control':'no-cache','Pragma':'no-cache'}});
   if(!r.ok)throw new Error('Cloud read failed: '+r.status);
   const rows=await r.json();
@@ -141,12 +140,15 @@ async function cloudBuildUI(){
   let top=ce('cloudTopbar');
   if(!top){
     top=document.createElement('div');top.id='cloudTopbar';top.className='cloudTopbar';
-    top.innerHTML='<img class="cloudTopLogo" src="abstraction-logo-white.svg?v=20260929-2155-v10" alt="Abstraction"><div class="cloudTopNav" id="cloudTopNav"><button type="button" data-page="visual">Main Menu</button><button type="button" data-page="systems">Systems</button><button type="button" data-page="index">Component Index</button></div><button type="button" class="cloudTopAdd" id="cloudTopAdd">+ Add Component</button>';
+    top.innerHTML='<img class="cloudTopLogo" src="abstraction-logo-white.svg?v=20260930-0630-v1" alt="Abstraction"><div class="cloudTopNav" id="cloudTopNav"><button type="button" data-page="visual">Main Menu</button><button type="button" data-page="systems">Systems</button><button type="button" data-page="index">Component Index</button></div><button type="button" class="cloudTopAdd" id="cloudTopAdd">+ Add Component</button>';
     document.body.prepend(top);
     document.querySelectorAll('#cloudTopNav button').forEach(b=>b.onclick=async()=>{
       const p=b.dataset.page;
-      if(p==='visual'){const ok=await cloudSave();if(ok)cloudGoHome()}
-      else{show(p);cloudTopActive()}
+      if(p==='visual'){
+        const saving=cloudSave();
+        cloudGoHome();
+        await saving;
+      }else{show(p);cloudTopActive()}
     });
     ce('cloudTopAdd').onclick=()=>edit(null);
   }
