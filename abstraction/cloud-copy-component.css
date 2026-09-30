@@ -1,0 +1,11 @@
+/* Copy Component To control - v2026.09.30.12 */
+.cloudCopyComponentWrap{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cloudCopyComponentWrap .btn{white-space:nowrap}
+.cloudCopyComponentSelect{width:auto;min-width:165px;max-width:220px;min-height:40px;padding:8px 30px 8px 9px;background:#0d1014;color:var(--text);border:1px solid var(--line);border-radius:8px}
+.cloudCopyComponentSelect.hidden{display:none!important}
+@media(max-width:650px){
+  #detailDlg .mf{align-items:flex-start;flex-wrap:wrap}
+  .cloudCopyComponentWrap{width:100%;order:2}
+  .cloudCopyComponentWrap .btn{flex:0 0 auto;min-height:36px!important;padding:6px 8px!important}
+  .cloudCopyComponentSelect{flex:1 1 150px;min-width:0;max-width:none;min-height:36px;font-size:16px!important;padding:6px 28px 6px 8px}
+}
