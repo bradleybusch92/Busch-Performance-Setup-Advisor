@@ -128,10 +128,12 @@ async function accountChangePassword(){
   const btn=document.getElementById('cloudAccountChangePassword');
   btn.disabled=true;btn.textContent='Changing…';accountMessage('');
   try{
-    const {error:verifyError}=await cloudClient.auth.signInWithPassword({email,password:current});
+    const {data:verified,error:verifyError}=await cloudClient.auth.signInWithPassword({email,password:current});
     if(verifyError){accountMessage('Current password is incorrect.');return}
-    const {error}=await cloudClient.auth.updateUser({password:next});
+    if(verified?.session)cloudSession=verified.session;
+    const {data:updated,error}=await cloudClient.auth.updateUser({password:next});
     if(error){accountMessage(error.message||'Could not change password.');return}
+    if(updated?.user&&cloudSession)cloudSession={...cloudSession,user:updated.user};
     document.getElementById('cloudAccountCurrentPassword').value='';
     document.getElementById('cloudAccountNewPassword').value='';
     document.getElementById('cloudAccountConfirmPassword').value='';
