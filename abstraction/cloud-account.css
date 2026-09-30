@@ -1,0 +1,12 @@
+/* Account settings - v2026.09.30.5 */
+#cloudAccountDlg{width:min(520px,calc(100vw - 22px))}
+.cloudAccountBody{display:grid;gap:12px}
+.cloudAccountSection{border:1px solid var(--line);background:#0f1216;border-radius:10px;padding:12px;display:grid;gap:7px}
+.cloudAccountSectionTitle{font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.06em;color:#cbd1d8;margin-bottom:2px}
+.cloudAccountSection label{font-size:11px;color:var(--muted);font-weight:700}
+.cloudAccountSection input{width:100%;font-size:16px}
+.cloudAccountSection .btn{justify-self:start;margin-top:4px}
+.cloudAccountHelp{font-size:10px;color:var(--muted);line-height:1.4;margin-top:-1px}
+.cloudAccountStatus{min-height:20px;color:#e0b47a;font-size:12px;font-weight:700}
+.cloudAccountStatus.ok{color:#9bd5a5}
+@media(max-width:650px){#cloudAccountDlg{width:calc(100vw - 14px)}.cloudAccountBody{padding:10px!important}.cloudAccountSection{padding:10px}}
