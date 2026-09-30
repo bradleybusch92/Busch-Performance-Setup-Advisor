@@ -22,8 +22,9 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
 .auth input{width:190px}
 .frame{flex:1 1 auto;min-height:0;width:100%;border:0;display:block;background:#090b0e}
 .toast{position:fixed;right:14px;bottom:14px;z-index:80;background:#11151a;border:1px solid #58616c;padding:10px 13px;border-radius:8px;opacity:0;transition:.18s;pointer-events:none;max-width:min(460px,calc(100vw - 28px))}.toast.show{opacity:1}
+.versionBadge{position:fixed;right:5px;bottom:3px;z-index:90;font-size:8px;line-height:1;color:#7f8790;opacity:.55;pointer-events:none;user-select:none}
 @media(max-width:760px){.topbar.loggedIn{align-items:center;overflow-x:auto}.topbar.loggedIn .navGroup{width:auto;overflow:visible}.topbar.loggedIn .spacer{display:none}.topbar.loggedIn .status{display:none}.topbar.loggedIn .auth{width:auto;margin-left:auto}.topbar:not(.loggedIn){align-items:stretch}.topbar:not(.loggedIn) .navGroup{width:100%;overflow-x:auto}.topbar:not(.loggedIn) .spacer{display:none}.topbar:not(.loggedIn) .auth{width:100%}.auth input{flex:1;min-width:0}}
-@media(max-width:500px){.topbar.loggedIn button{font-size:11px;padding:4px 6px;min-height:28px}.topbar:not(.loggedIn) .auth input{width:100%;flex-basis:100%}}
+@media(max-width:500px){.topbar.loggedIn button{font-size:11px;padding:4px 6px;min-height:28px}.topbar:not(.loggedIn) .auth input{width:100%;flex-basis:100%;font-size:16px!important}}
 </style>
 </head>
 <body>
@@ -46,15 +47,16 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
     <button id="signUp" type="button">Create Account</button>
   </div>
 </div>
-<iframe id="app" class="frame" src="index.html?v=20260929-1935-fix2" title="Abstraction Owner's Manual"></iframe>
+<iframe id="app" class="frame" src="index.html?v=20260929-2015-v1" title="Abstraction Owner's Manual"></iframe>
 <div id="toast" class="toast"></div>
+<div class="versionBadge" id="versionBadge">v2026.09.29.1</div>
 <script>
 (function(){
   'use strict';
   const SB_URL='https://gjlhegrcmaclikeoeonh.supabase.co';
   const SB_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9';
   const APP_KEY='abstractionOwnersManualWebV1';
-  const LOGO_URL='abstraction-logo-white.svg?v=20260929-1935-fix2';
+  const LOGO_URL='abstraction-logo-white.svg?v=20260929-2015-v1';
   const $=id=>document.getElementById(id);
   let client=null,session=null,lastLocal=null,lastLocalCanonical=null,lastSyncedCanonical=null,lastRemoteUpdated=null,pushing=false,pushDelay=null,localTimer=null,remoteTimer=null,syncedUserId=null,initialSyncInProgress=false,pendingView=null;
 
@@ -112,14 +114,13 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
     }catch(e){}
   }
 
-  async function saveSetupAndReturn(doc,win){
+  async function saveSetup(doc,win){
     const saveBtn=doc.getElementById('cloudSetupSave');
     try{
       if(doc.activeElement&&typeof doc.activeElement.blur==='function')doc.activeElement.blur();
       if(win&&typeof win.save==='function')win.save();
     }catch(e){}
     if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Saving…'}
-
     await new Promise(resolve=>setTimeout(resolve,60));
     const raw=getLocalRaw();
     if(!raw){
@@ -127,27 +128,16 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
       toast('Could not read the setup data.');
       return;
     }
-
     while(pushing)await new Promise(resolve=>setTimeout(resolve,80));
     const ok=session ? await pushRaw(raw,true) : true;
     if(!ok){
       if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Save'}
       return;
     }
-
     const confirm=doc.getElementById('cloudSaveConfirm');
     if(confirm){confirm.textContent='✓ Saved';confirm.classList.add('show')}
     toast(session?'✓ Setup saved to cloud':'✓ Setup saved on this device',1300);
-    await new Promise(resolve=>setTimeout(resolve,700));
-
-    doc.body.classList.remove('cloudFieldEditMode');
-    try{
-      if(win&&typeof win.show==='function')win.show('visual');
-      const area=doc.getElementById('area');if(area)area.classList.add('hidden');
-      const home=doc.getElementById('home');if(home)home.classList.remove('hidden');
-      if(win&&typeof win.scrollTo==='function')win.scrollTo(0,0);
-    }catch(e){}
-    setOuterActive('visual');
+    await new Promise(resolve=>setTimeout(resolve,1100));
     if(confirm)confirm.classList.remove('show');
     if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Save'}
   }
@@ -168,7 +158,7 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
         btn.textContent=editing?'Done Editing':'Edit Fields';
       });
       const saveBtn=doc.getElementById('cloudSetupSave');
-      saveBtn.addEventListener('click',()=>saveSetupAndReturn(doc,win));
+      saveBtn.addEventListener('click',()=>saveSetup(doc,win));
     }
     const btn=doc.getElementById('cloudFieldEditToggle');
     if(btn)btn.textContent=doc.body.classList.contains('cloudFieldEditMode')?'Done Editing':'Edit Fields';
@@ -215,15 +205,19 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
           #cloudSaveConfirm{color:#9bd5a5;font-weight:800;opacity:0;transform:translateY(2px);transition:opacity .15s ease,transform .15s ease;white-space:nowrap}
           #cloudSaveConfirm.show{opacity:1;transform:translateY(0)}
           @media(max-width:650px){
-            html,body{max-width:100%;overflow-x:hidden!important}
+            html,body{max-width:100%!important;overflow-x:hidden!important}
+            .shell{max-width:100%!important;overflow-x:hidden!important}
+            input,select,textarea,[contenteditable="true"]{font-size:16px!important;max-width:100%!important}
+            dialog{max-width:calc(100vw - 18px)!important}
             #cloudBrandBlock{width:min(100%,680px)} #cloudBrandLogo{max-height:190px}
             #setupPane .setupGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
             #setupPane .row{padding:6px!important;min-width:0!important}
             #setupPane .row label{font-size:10.5px!important;min-height:27px}
-            #setupPane .row input,#setupPane textarea,#setupPane select{font-size:16px!important}
-            #setupPane .row input{padding:6px 7px!important;min-height:34px;max-width:100%!important}
+            #setupPane .row input{padding:6px 7px!important;min-height:34px;font-size:16px!important;max-width:100%!important}
+            #setupPane input,#setupPane select,#setupPane textarea{font-size:16px!important}
             body.cloudFieldEditMode #setupPane .row{padding-right:39px!important}
-            #cloudFieldEditControls{position:relative;z-index:2}
+            #cloudFieldEditControls{position:relative;flex-wrap:nowrap}
+            .cloudSetupActions{gap:6px}
           }
           @media(max-width:350px){#setupPane .setupGrid{grid-template-columns:1fr!important}}
         `;doc.head.appendChild(st);
@@ -272,7 +266,6 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
     if(!force&&localCanon===lastSyncedCanonical){
       lastLocal=raw;lastLocalCanonical=localCanon;return true;
     }
-
     pushing=true;status('Saving to cloud…','warn');let parsed;
     try{parsed=JSON.parse(raw)}catch(e){
       pushing=false;status('Local data error','bad');toast("The local Owner's Manual data could not be read.");return false
@@ -330,23 +323,19 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
     const {data,error}=await client.from('owner_manuals').select('state,updated_at').eq('user_id',session.user.id).maybeSingle();
     if(error||!data)return;
     if(lastRemoteUpdated&&data.updated_at===lastRemoteUpdated)return;
-
     const remoteCanon=canonicalState(data.state);
     const localRaw=getLocalRaw();
     const localCanon=canonicalRaw(localRaw);
-
     if(remoteCanon===lastSyncedCanonical){
       lastRemoteUpdated=data.updated_at;
       status('Synced','ok');
       return;
     }
-
     const localDirty=!!localCanon&&!!lastSyncedCanonical&&localCanon!==lastSyncedCanonical;
     if(localDirty){
       status('Unsaved local changes','warn');
       return;
     }
-
     const remoteRaw=JSON.stringify(data.state);
     lastRemoteUpdated=data.updated_at;
     lastSyncedCanonical=remoteCanon;
