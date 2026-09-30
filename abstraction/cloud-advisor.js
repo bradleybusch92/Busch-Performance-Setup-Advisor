@@ -1,7 +1,7 @@
 (() => {
 'use strict';
-const ADVISOR_VERSION='v2026.09.30.3';
-const ADVISOR_SRC='../index.html?embedded=abstraction&v=20260930-0845-v3';
+const ADVISOR_VERSION='v2026.09.30.4';
+const ADVISOR_SRC='../index.html?embedded=abstraction&v=20260930-0830-v4';
 let installed=false;
 
 function exitAdvisor(){
