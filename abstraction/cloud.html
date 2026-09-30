@@ -11,11 +11,11 @@
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#090b0e;color:#f3f5f7;font:14px/1.4 Arial,sans-serif}.boot{padding:24px;color:#a6adb6}.login{width:min(430px,calc(100% - 28px));margin:56px auto 0;padding:14px;border:1px solid #353b44;border-radius:12px;background:#13161a}.login h3{margin:0 0 10px}.login input,.login button{width:100%;margin-top:8px;min-height:38px;border:1px solid #353b44;border-radius:8px;padding:8px;background:#1a1e23;color:#f3f5f7;font:inherit}.login input{font-size:16px}.login button.primary{background:#eceff2;color:#111418;font-weight:800}.status{margin-top:9px;color:#a6adb6;font-size:12px}
 </style></head><body>
 <div id="bootMsg" class="boot">Loading cloud data…</div>
-<div id="login" class="login" style="display:none"><h3>Abstraction Owner's Manual</h3><input id="email" type="email" autocomplete="username" placeholder="Email"><input id="password" type="password" autocomplete="current-password" placeholder="Password"><button id="signIn" class="primary" type="button">Sign In</button><button id="signUp" type="button">Create Account</button><div id="status" class="status"></div></div>
+<div id="login" class="login" style="display:none"><h3>Abstraction Owner's Manual</h3><input id="email" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Email or Username"><input id="password" type="password" autocomplete="current-password" placeholder="Password"><button id="signIn" class="primary" type="button">Sign In</button><button id="signUp" type="button">Create Account</button><div id="status" class="status"></div></div>
 <script>
 (async()=>{
 'use strict';
-const B_URL='https://gjlhegrcmaclikeoeonh.supabase.co',B_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9',B_STATE_KEY='abstractionOwnersManualWebV1',B_VER='20260930-0855-v6';
+const B_URL='https://gjlhegrcmaclikeoeonh.supabase.co',B_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9',B_STATE_KEY='abstractionOwnersManualWebV1',B_VER='20260930-0920-v7';
 const g=id=>document.getElementById(id);
 const bc=window.supabase.createClient(B_URL,B_KEY);
 async function freshCloudState(sess){
@@ -40,14 +40,40 @@ async function launch(sess){
     const oldInit="let state;try{state=JSON.parse(localStorage.getItem(KEY))||makeSeed()}catch(e){state=makeSeed()}";
     const newInit="let state;try{state=window.__ABSTRACTION_CLOUD_BOOT||JSON.parse(localStorage.getItem(KEY))||makeSeed()}catch(e){state=window.__ABSTRACTION_CLOUD_BOOT||makeSeed()}";
     h=h.replace(oldInit,newInit);
-    h=h.replace('</body>','<script src="cloud-enhance.js?v='+B_VER+'"><\/script><script src="cloud-advisor.js?v='+B_VER+'"><\/script><script src="cloud-engine.js?v='+B_VER+'"><\/script><script src="cloud-account.js?v='+B_VER+'"><\/script></body>');
+    h=h.replace('</body>','<script src="cloud-enhance.js?v='+B_VER+'"><\/script><script src="cloud-advisor.js?v='+B_VER+'"><\/script><script src="cloud-engine.js?v='+B_VER+'"><\/script><script src="cloud-account.js?v='+B_VER+'"><\/script><script src="cloud-login-ui.js?v='+B_VER+'"><\/script></body>');
     document.open();document.write(h);document.close();
   }catch(e){g('bootMsg').textContent="Could not load the Owner's Manual. Refresh and try again."}
 }
 async function showLogin(){g('bootMsg').style.display='none';g('login').style.display='block'}
-g('signIn').onclick=async()=>{g('status').textContent='Signing in…';const {data,error}=await bc.auth.signInWithPassword({email:g('email').value.trim(),password:g('password').value});if(error){g('status').textContent=error.message;return}launch(data.session)};
-g('password').onkeydown=e=>{if(e.key==='Enter')g('signIn').click()};
-g('signUp').onclick=async()=>{g('status').textContent='Creating account…';const {data,error}=await bc.auth.signUp({email:g('email').value.trim(),password:g('password').value,options:{emailRedirectTo:location.origin+location.pathname}});if(error){g('status').textContent=error.message;return}if(data.session)launch(data.session);else g('status').textContent='Confirm your email, then sign in.'};
+async function signIn(){
+  const identifier=g('email').value.trim();
+  const password=g('password').value;
+  if(!identifier||!password){g('status').textContent='Enter your email or username and password.';return}
+  g('status').textContent='Signing in…';
+  try{
+    let session=null;
+    if(identifier.includes('@')){
+      const {data,error}=await bc.auth.signInWithPassword({email:identifier,password});
+      if(error)throw error;
+      session=data.session;
+    }else{
+      const r=await fetch(B_URL+'/functions/v1/owner-manual-login',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json',apikey:B_KEY,Authorization:'Bearer '+B_KEY},body:JSON.stringify({identifier,password})});
+      const x=await r.json().catch(()=>({}));
+      if(!r.ok||!x.access_token||!x.refresh_token)throw new Error(x.error||'Invalid login credentials');
+      const {data,error}=await bc.auth.setSession({access_token:x.access_token,refresh_token:x.refresh_token});
+      if(error)throw error;
+      session=data.session;
+    }
+    if(!session)throw new Error('Invalid login credentials');
+    launch(session);
+  }catch(e){
+    console.warn('sign in',e);
+    g('status').textContent='Invalid email/username or password.';
+  }
+}
+g('signIn').onclick=signIn;
+g('password').onkeydown=e=>{if(e.key==='Enter')signIn()};
+g('signUp').onclick=async()=>{const email=g('email').value.trim();if(!email.includes('@')){g('status').textContent='Use your email address to create a new account.';return}g('status').textContent='Creating account…';const {data,error}=await bc.auth.signUp({email,password:g('password').value,options:{emailRedirectTo:location.origin+location.pathname}});if(error){g('status').textContent=error.message;return}if(data.session)launch(data.session);else g('status').textContent='Confirm your email, then sign in.'};
 const {data}=await bc.auth.getSession();if(data.session)launch(data.session);else showLogin();
 })();
 </script></body></html>
