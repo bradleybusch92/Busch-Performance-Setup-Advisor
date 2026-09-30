@@ -28,6 +28,11 @@ function showAdvisor(){
   document.querySelectorAll('#cloudTopNav button').forEach(b=>b.classList.remove('active'));
 }
 
+function setVersion(){
+  const version=document.getElementById('cloudVersion');
+  if(version)version.textContent=ADVISOR_VERSION;
+}
+
 function install(){
   if(installed)return true;
   const nav=document.getElementById('cloudTopNav');
@@ -53,8 +58,9 @@ function install(){
   });
   document.getElementById('cloudTopAdd')?.addEventListener('click',()=>exitAdvisor(),true);
 
-  const version=document.getElementById('cloudVersion');
-  if(version)version.textContent=ADVISOR_VERSION;
+  setVersion();
+  setTimeout(setVersion,0);
+  setTimeout(setVersion,250);
 
   installed=true;
   return true;
