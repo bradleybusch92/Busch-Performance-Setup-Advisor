@@ -1,4 +1,4 @@
-/* Abstraction cloud/safari standalone enhancements - v2026.09.29.10 */
+/* Abstraction cloud/safari standalone enhancements - v2026.09.30.2 */
 html{background:#090b0e!important;min-height:100%}
 html,body{max-width:100%;overflow-x:hidden}
 body{padding-top:42px!important;min-height:100dvh!important;background:#090b0e!important}
@@ -48,6 +48,28 @@ body.cloudFieldEditMode #setupPane .row .x{display:block!important;position:abso
 .cloudVersion{position:fixed;right:4px;bottom:2px;z-index:10001;font-size:8px;color:#7f8790;opacity:.55;pointer-events:none;user-select:none}
 .cloudToast{position:fixed;right:12px;bottom:14px;z-index:10002;background:#11151a;border:1px solid #58616c;padding:9px 11px;border-radius:8px;opacity:0;transition:.18s;pointer-events:none;max-width:min(460px,calc(100vw - 24px))}
 .cloudToast.show{opacity:1}
+
+/* Photos / Files */
+#cloudAreaFilesPane{min-height:130px}
+.cloudAttachToolbar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
+.cloudAttachToolbar .btn{min-height:34px!important;padding:6px 10px!important}
+.cloudFileGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:9px}
+.cloudFileCard{display:flex;gap:9px;min-width:0;border:1px solid var(--line);background:#0f1216;border-radius:10px;padding:8px}
+.cloudFilePreview{width:84px;height:76px;flex:0 0 84px;border:1px solid #2e343c;border-radius:8px;background:#090c10;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.cloudFilePreview img{width:100%;height:100%;object-fit:cover;cursor:pointer}
+.cloudFileIcon{font-size:12px;font-weight:900;color:#b9c0c8;letter-spacing:.04em;text-align:center;padding:5px}
+.cloudFileInfo{display:flex;flex:1;min-width:0;flex-direction:column;justify-content:center}
+.cloudFileName{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cloudFileMeta{font-size:10px;color:var(--muted);margin-top:2px}
+.cloudFileActions{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.cloudFileActions .btn{min-height:27px!important;padding:3px 7px!important;font-size:10px!important;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.cloudFileOpen.disabled{pointer-events:none;opacity:.45}
+.cloudFileEmpty{grid-column:1/-1;padding:20px 8px;color:var(--muted);text-align:center;border:1px dashed #343a42;border-radius:9px}
+.cloudAttachmentBox h4{margin-bottom:8px!important}
+.cloudEditFilesBox{margin-top:13px;padding-top:12px;border-top:1px solid #292e35}
+.cloudEditFilesTitle{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase;margin-bottom:8px}
+#cloudComponentFiles .cloudFileGrid,#cloudEditComponentFiles .cloudFileGrid{grid-template-columns:repeat(auto-fill,minmax(205px,1fr))}
+
 @media(max-width:650px){
  body{padding-top:40px!important;min-height:100dvh!important;background:#090b0e!important}
  .cloudTopbar{height:40px;padding:3px 5px;gap:2px}
@@ -71,5 +93,10 @@ body.cloudFieldEditMode #setupPane .row .x{display:block!important;position:abso
  body.cloudFieldEditMode #setupPane .row{padding-right:39px!important}
  .areaTop{padding:6px 7px!important}
  .areaTop h2{font-size:20px!important}
+ .tabs{gap:4px!important;padding:6px 7px!important}
+ .tab{font-size:10px!important;padding:4px 7px!important}
+ .cloudFileGrid,#cloudComponentFiles .cloudFileGrid,#cloudEditComponentFiles .cloudFileGrid{grid-template-columns:1fr}
+ .cloudFilePreview{width:78px;height:70px;flex-basis:78px}
+ .cloudAttachToolbar .btn{min-height:32px!important;font-size:11px!important;padding:5px 8px!important}
 }
 @media(max-width:350px){#setupPane .setupGrid{grid-template-columns:1fr!important}}
