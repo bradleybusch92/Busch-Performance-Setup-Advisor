@@ -1,4 +1,4 @@
-/* Desktop layout refinements - v2026.09.30.10
+/* Desktop layout refinements - v2026.09.30.11
    Desktop only. Mobile/tablet UI is intentionally untouched. */
 @media(min-width:1051px){
   /* Car Areas order:
@@ -6,18 +6,18 @@
      LF | RF
      Engine
      Cockpit
+     General Setup
      LR | RR
-     Rear End
-     General Setup remains available from the visual car, but is omitted from this physical-area rail. */
+     Rear End */
   body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="Front End"]{order:1;grid-column:1/-1!important}
   body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="LF"]{order:2;grid-column:auto!important}
   body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="RF"]{order:3;grid-column:auto!important}
   body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="Engine"]{order:4;grid-column:1/-1!important}
   body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="Cockpit"]{order:5;grid-column:1/-1!important}
-  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="General Setup"]{display:none!important}
-  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="LR"]{order:6;grid-column:auto!important}
-  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="RR"]{order:7;grid-column:auto!important}
-  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="Rear End"]{order:8;grid-column:1/-1!important}
+  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="General Setup"]{order:6;display:block!important;grid-column:1/-1!important}
+  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="LR"]{order:7;grid-column:auto!important}
+  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="RR"]{order:8;grid-column:auto!important}
+  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="Rear End"]{order:9;grid-column:1/-1!important}
 
   /* Make the desktop visual car wider and short enough to fit the Main Menu viewport without scrolling. */
   body.cloudDesktopMode #home .carWrap{
