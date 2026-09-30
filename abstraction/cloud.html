@@ -46,7 +46,7 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
     <button id="signUp" type="button">Create Account</button>
   </div>
 </div>
-<iframe id="app" class="frame" src="index.html?v=20260929-1915" title="Abstraction Owner's Manual"></iframe>
+<iframe id="app" class="frame" src="index.html?v=20260929-1930" title="Abstraction Owner's Manual"></iframe>
 <div id="toast" class="toast"></div>
 <script>
 (function(){
@@ -54,7 +54,7 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
   const SB_URL='https://gjlhegrcmaclikeoeonh.supabase.co';
   const SB_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9';
   const APP_KEY='abstractionOwnersManualWebV1';
-  const LOGO_URL='abstraction-logo-white.svg?v=20260929-1915';
+  const LOGO_URL='abstraction-logo-white.svg?v=20260929-1930';
   const $=id=>document.getElementById(id);
   let client=null,session=null,lastLocal=null,lastRemoteUpdated=null,pushing=false,pushDelay=null,localTimer=null,remoteTimer=null;
 
@@ -110,17 +110,23 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
           #cloudBrandLogo{display:block;width:100%;height:auto;max-height:255px;object-fit:contain;object-position:left center}
           #cloudInnerEmail{margin-top:4px;color:#a6adb6;font-size:12px}
           body:not(.cloudFieldEditMode) #setupPane .x,body:not(.cloudFieldEditMode) #setupPane .add{display:none!important}
-          body:not(.cloudFieldEditMode) #setupPane .row{grid-template-columns:minmax(145px,1.15fr) minmax(120px,1fr)!important}
-          #cloudFieldEditControls{display:flex;justify-content:flex-end;margin-top:12px;padding-top:8px;border-top:1px solid #292e35}
+          #setupPane .setupGrid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(155px,1fr))!important;gap:8px!important}
+          #setupPane .row{display:flex!important;position:relative;flex-direction:column;align-items:stretch!important;gap:4px!important;padding:7px 8px!important;border:1px solid #292e35!important;border-radius:8px;background:#0f1216;min-width:0}
+          #setupPane .row label{display:block;font-size:11px!important;line-height:1.15;min-height:25px;color:#d9dee4}
+          #setupPane .row input{width:100%!important;min-width:0;padding:7px 8px!important;min-height:34px}
+          body.cloudFieldEditMode #setupPane .row{padding-right:41px!important}
+          body.cloudFieldEditMode #setupPane .row .x{display:block!important;position:absolute;right:6px;top:6px;width:28px!important;height:28px!important;min-height:28px!important;padding:0!important}
+          #cloudFieldEditControls{display:flex;justify-content:flex-end;margin-top:10px;padding-top:8px;border-top:1px solid #292e35}
           #cloudFieldEditToggle{min-width:105px}
           @media(max-width:650px){
             #cloudBrandBlock{width:min(100%,680px)} #cloudBrandLogo{max-height:190px}
-            body:not(.cloudFieldEditMode) #setupPane .row{grid-template-columns:1fr!important}
-            body.cloudFieldEditMode #setupPane .row{grid-template-columns:minmax(0,1fr) 36px!important;gap:6px!important}
-            body.cloudFieldEditMode #setupPane .row label{grid-column:1/-1}
-            body.cloudFieldEditMode #setupPane .row input{grid-column:1}
-            body.cloudFieldEditMode #setupPane .row .x{grid-column:2;width:36px!important;align-self:stretch}
+            #setupPane .setupGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+            #setupPane .row{padding:6px!important}
+            #setupPane .row label{font-size:10.5px!important;min-height:27px}
+            #setupPane .row input{padding:6px 7px!important;min-height:32px;font-size:13px}
+            body.cloudFieldEditMode #setupPane .row{padding-right:39px!important}
           }
+          @media(max-width:350px){#setupPane .setupGrid{grid-template-columns:1fr!important}}
         `;doc.head.appendChild(st);
       }
       ensureSetupFieldEditor(doc,win);
