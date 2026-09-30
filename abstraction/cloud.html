@@ -15,12 +15,11 @@
 <script>
 (async()=>{
 'use strict';
-const B_URL='https://gjlhegrcmaclikeoeonh.supabase.co',B_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9',B_STATE_KEY='abstractionOwnersManualWebV1',B_VER='20260929-2155-v10';
+const B_URL='https://gjlhegrcmaclikeoeonh.supabase.co',B_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9',B_STATE_KEY='abstractionOwnersManualWebV1',B_VER='20260930-0630-v1';
 const g=id=>document.getElementById(id);
 const bc=window.supabase.createClient(B_URL,B_KEY);
 async function freshCloudState(sess){
-  const future=new Date(Date.now()+60000).toISOString();
-  const q='select=state,updated_at&user_id=eq.'+encodeURIComponent(sess.user.id)+'&updated_at=lt.'+encodeURIComponent(future)+'&order=updated_at.desc&limit=1';
+  const q='select=state,updated_at&user_id=eq.'+encodeURIComponent(sess.user.id)+'&limit=1';
   const r=await fetch(B_URL+'/rest/v1/owner_manuals?'+q,{cache:'no-store',headers:{apikey:B_KEY,Authorization:'Bearer '+sess.access_token,Accept:'application/json','Cache-Control':'no-cache','Pragma':'no-cache'}});
   if(!r.ok)throw new Error('Cloud load failed: '+r.status);
   const rows=await r.json();
