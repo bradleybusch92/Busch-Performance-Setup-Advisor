@@ -46,7 +46,7 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
     <button id="signUp" type="button">Create Account</button>
   </div>
 </div>
-<iframe id="app" class="frame" src="index.html?v=20260929-1945" title="Abstraction Owner's Manual"></iframe>
+<iframe id="app" class="frame" src="index.html?v=20260929-1935-fix2" title="Abstraction Owner's Manual"></iframe>
 <div id="toast" class="toast"></div>
 <script>
 (function(){
@@ -54,32 +54,92 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
   const SB_URL='https://gjlhegrcmaclikeoeonh.supabase.co';
   const SB_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9';
   const APP_KEY='abstractionOwnersManualWebV1';
-  const LOGO_URL='abstraction-logo-white.svg?v=20260929-1915';
+  const LOGO_URL='abstraction-logo-white.svg?v=20260929-1935-fix2';
   const $=id=>document.getElementById(id);
-  let client=null,session=null,lastLocal=null,lastRemoteUpdated=null,pushing=false,pushDelay=null,localTimer=null,remoteTimer=null;
+  let client=null,session=null,lastLocal=null,lastLocalCanonical=null,lastSyncedCanonical=null,lastRemoteUpdated=null,pushing=false,pushDelay=null,localTimer=null,remoteTimer=null,syncedUserId=null,initialSyncInProgress=false,pendingView=null;
 
   function toast(msg,duration=3200){$('toast').textContent=msg;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),duration)}
   function status(msg,cls=''){$('syncStatus').textContent=msg;$('syncStatus').className='status '+cls}
   function setOuterActive(page){document.querySelectorAll('#outerNav .navBtn').forEach(b=>b.classList.toggle('active',b.dataset.page===page))}
 
+  function canonicalize(value){
+    if(Array.isArray(value))return value.map(canonicalize);
+    if(value&&typeof value==='object'){
+      const out={};
+      Object.keys(value).sort().forEach(k=>{out[k]=canonicalize(value[k])});
+      return out;
+    }
+    return value;
+  }
+
+  function canonicalRaw(raw){
+    if(!raw)return null;
+    try{return JSON.stringify(canonicalize(JSON.parse(raw)))}catch(e){return null}
+  }
+
+  function canonicalState(state){
+    try{return JSON.stringify(canonicalize(state))}catch(e){return null}
+  }
+
+  function captureInnerView(){
+    try{
+      const doc=$('app').contentDocument;
+      if(!doc)return null;
+      let page='visual';
+      if(!doc.getElementById('systems')?.classList.contains('hidden'))page='systems';
+      else if(!doc.getElementById('index')?.classList.contains('hidden'))page='index';
+      const areaOpen=page==='visual' && !doc.getElementById('area')?.classList.contains('hidden');
+      return {
+        page,
+        area:areaOpen?(doc.getElementById('areaTitle')?.textContent||null):null,
+        tab:areaOpen?(doc.querySelector('.tab.active')?.dataset.tab||'setup'):null,
+        scrollY:$('app').contentWindow?.scrollY||0
+      };
+    }catch(e){return null}
+  }
+
+  function restoreInnerView(view){
+    if(!view)return;
+    try{
+      const win=$('app').contentWindow,doc=$('app').contentDocument;
+      if(view.page&&typeof win.show==='function')win.show(view.page);
+      setOuterActive(view.page||'visual');
+      if(view.page==='visual'&&view.area&&typeof win.openArea==='function'){
+        win.openArea(view.area);
+        if(view.tab&&typeof win.setTab==='function')win.setTab(view.tab);
+      }
+      setTimeout(()=>{try{win.scrollTo(0,view.scrollY||0)}catch(e){}},0);
+    }catch(e){}
+  }
+
   async function saveSetupAndReturn(doc,win){
     const saveBtn=doc.getElementById('cloudSetupSave');
-    try{if(doc.activeElement&&typeof doc.activeElement.blur==='function')doc.activeElement.blur()}catch(e){}
+    try{
+      if(doc.activeElement&&typeof doc.activeElement.blur==='function')doc.activeElement.blur();
+      if(win&&typeof win.save==='function')win.save();
+    }catch(e){}
     if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Saving…'}
-    let ok=true;
+
+    await new Promise(resolve=>setTimeout(resolve,60));
     const raw=getLocalRaw();
-    if(session&&raw){
-      while(pushing)await new Promise(resolve=>setTimeout(resolve,80));
-      ok=await pushRaw(raw,true);
+    if(!raw){
+      if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Save'}
+      toast('Could not read the setup data.');
+      return;
     }
+
+    while(pushing)await new Promise(resolve=>setTimeout(resolve,80));
+    const ok=session ? await pushRaw(raw,true) : true;
     if(!ok){
       if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Save'}
       return;
     }
+
     const confirm=doc.getElementById('cloudSaveConfirm');
     if(confirm){confirm.textContent='✓ Saved';confirm.classList.add('show')}
-    toast('✓ Setup saved',1400);
-    await new Promise(resolve=>setTimeout(resolve,650));
+    toast(session?'✓ Setup saved to cloud':'✓ Setup saved on this device',1300);
+    await new Promise(resolve=>setTimeout(resolve,700));
+
     doc.body.classList.remove('cloudFieldEditMode');
     try{
       if(win&&typeof win.show==='function')win.show('visual');
@@ -155,17 +215,15 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
           #cloudSaveConfirm{color:#9bd5a5;font-weight:800;opacity:0;transform:translateY(2px);transition:opacity .15s ease,transform .15s ease;white-space:nowrap}
           #cloudSaveConfirm.show{opacity:1;transform:translateY(0)}
           @media(max-width:650px){
-            html,body{max-width:100%!important;overflow-x:hidden!important}
-            .shell{max-width:100%!important;overflow-x:hidden!important}
+            html,body{max-width:100%;overflow-x:hidden!important}
             #cloudBrandBlock{width:min(100%,680px)} #cloudBrandLogo{max-height:190px}
             #setupPane .setupGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
             #setupPane .row{padding:6px!important;min-width:0!important}
             #setupPane .row label{font-size:10.5px!important;min-height:27px}
-            #setupPane .row input{padding:6px 7px!important;min-height:34px;font-size:16px!important;max-width:100%!important}
-            #setupPane input,#setupPane select,#setupPane textarea{font-size:16px!important}
+            #setupPane .row input,#setupPane textarea,#setupPane select{font-size:16px!important}
+            #setupPane .row input{padding:6px 7px!important;min-height:34px;max-width:100%!important}
             body.cloudFieldEditMode #setupPane .row{padding-right:39px!important}
-            #cloudFieldEditControls{position:relative;flex-wrap:nowrap}
-            .cloudSetupActions{gap:6px}
+            #cloudFieldEditControls{position:relative;z-index:2}
           }
           @media(max-width:350px){#setupPane .setupGrid{grid-template-columns:1fr!important}}
         `;doc.head.appendChild(st);
@@ -207,42 +265,118 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
   }
 
   async function pushRaw(raw,force=false){
-    if(!client||!session||!raw)return false;if(pushing)return false;if(!force&&raw===lastLocal)return true;
+    if(!client||!session||!raw)return false;
+    if(pushing)return false;
+    const localCanon=canonicalRaw(raw);
+    if(!localCanon){status('Local data error','bad');return false}
+    if(!force&&localCanon===lastSyncedCanonical){
+      lastLocal=raw;lastLocalCanonical=localCanon;return true;
+    }
+
     pushing=true;status('Saving to cloud…','warn');let parsed;
-    try{parsed=JSON.parse(raw)}catch(e){pushing=false;status('Local data error','bad');toast("The local Owner's Manual data could not be read.");return false}
+    try{parsed=JSON.parse(raw)}catch(e){
+      pushing=false;status('Local data error','bad');toast("The local Owner's Manual data could not be read.");return false
+    }
     const {data,error}=await client.from('owner_manuals').upsert({user_id:session.user.id,state:parsed},{onConflict:'user_id'}).select('updated_at').single();
     pushing=false;
     if(error){status('Cloud save failed','bad');toast('Cloud save failed: '+error.message);return false}
-    lastLocal=raw;lastRemoteUpdated=data&&data.updated_at?data.updated_at:null;status('Synced','ok');return true;
+    lastLocal=raw;
+    lastLocalCanonical=localCanon;
+    lastSyncedCanonical=localCanon;
+    lastRemoteUpdated=data&&data.updated_at?data.updated_at:null;
+    status('Synced','ok');
+    return true;
   }
 
   async function initialSync(){
-    if(!client||!session)return;status('Checking cloud…','warn');
-    const {data,error}=await client.from('owner_manuals').select('state,updated_at').eq('user_id',session.user.id).maybeSingle();
-    if(error){status('Cloud read failed','bad');toast('Cloud read failed: '+error.message);return}
-    const localRaw=getLocalRaw();
-    if(data&&data.state){
-      const cloudRaw=JSON.stringify(data.state);lastRemoteUpdated=data.updated_at;lastLocal=cloudRaw;
-      if(localRaw!==cloudRaw){setLocalRaw(cloudRaw);$('app').contentWindow.location.reload();}
-      status('Synced','ok');
-    }else if(localRaw){await pushRaw(localRaw,true)}else{status('Signed in - nothing to sync yet','warn')}
+    if(!client||!session||initialSyncInProgress)return;
+    if(syncedUserId===session.user.id&&lastSyncedCanonical)return;
+    initialSyncInProgress=true;status('Checking cloud…','warn');
+    try{
+      const {data,error}=await client.from('owner_manuals').select('state,updated_at').eq('user_id',session.user.id).maybeSingle();
+      if(error){status('Cloud read failed','bad');toast('Cloud read failed: '+error.message);return}
+      const localRaw=getLocalRaw();
+      const localCanon=canonicalRaw(localRaw);
+      if(data&&data.state){
+        const remoteRaw=JSON.stringify(data.state);
+        const remoteCanon=canonicalState(data.state);
+        lastRemoteUpdated=data.updated_at;
+        lastSyncedCanonical=remoteCanon;
+        lastLocalCanonical=remoteCanon;
+        syncedUserId=session.user.id;
+        if(localCanon!==remoteCanon){
+          pendingView=captureInnerView();
+          setLocalRaw(remoteRaw);
+          lastLocal=remoteRaw;
+          $('app').contentWindow.location.reload();
+        }else{
+          lastLocal=localRaw;
+          status('Synced','ok');
+        }
+      }else if(localRaw){
+        syncedUserId=session.user.id;
+        await pushRaw(localRaw,true);
+      }else{
+        syncedUserId=session.user.id;
+        status('Signed in - nothing to sync yet','warn');
+      }
+    }finally{
+      initialSyncInProgress=false;
+    }
   }
 
   async function checkRemote(){
-    if(!client||!session||pushing)return;
+    if(!client||!session||pushing||initialSyncInProgress)return;
     const {data,error}=await client.from('owner_manuals').select('state,updated_at').eq('user_id',session.user.id).maybeSingle();
-    if(error||!data)return;if(lastRemoteUpdated&&data.updated_at===lastRemoteUpdated)return;
+    if(error||!data)return;
+    if(lastRemoteUpdated&&data.updated_at===lastRemoteUpdated)return;
+
+    const remoteCanon=canonicalState(data.state);
     const localRaw=getLocalRaw();
-    if(localRaw&&lastLocal&&localRaw!==lastLocal){await pushRaw(localRaw);return}
-    const remoteRaw=JSON.stringify(data.state);lastRemoteUpdated=data.updated_at;lastLocal=remoteRaw;
-    if(localRaw!==remoteRaw){setLocalRaw(remoteRaw);$('app').contentWindow.location.reload();toast('Updated from cloud')}
-    status('Synced','ok');
+    const localCanon=canonicalRaw(localRaw);
+
+    if(remoteCanon===lastSyncedCanonical){
+      lastRemoteUpdated=data.updated_at;
+      status('Synced','ok');
+      return;
+    }
+
+    const localDirty=!!localCanon&&!!lastSyncedCanonical&&localCanon!==lastSyncedCanonical;
+    if(localDirty){
+      status('Unsaved local changes','warn');
+      return;
+    }
+
+    const remoteRaw=JSON.stringify(data.state);
+    lastRemoteUpdated=data.updated_at;
+    lastSyncedCanonical=remoteCanon;
+    lastLocalCanonical=remoteCanon;
+    lastLocal=remoteRaw;
+    pendingView=captureInnerView();
+    if(localCanon!==remoteCanon){
+      setLocalRaw(remoteRaw);
+      $('app').contentWindow.location.reload();
+      toast('Updated from cloud');
+    }else{
+      status('Synced','ok');
+    }
   }
 
   function startWatch(){
     clearInterval(localTimer);clearInterval(remoteTimer);
-    localTimer=setInterval(()=>{if(!session)return;const raw=getLocalRaw();if(raw&&raw!==lastLocal){clearTimeout(pushDelay);pushDelay=setTimeout(()=>pushRaw(raw),700)}},800);
-    remoteTimer=setInterval(checkRemote,5000);
+    localTimer=setInterval(()=>{
+      if(!session||initialSyncInProgress)return;
+      const raw=getLocalRaw();
+      const canon=canonicalRaw(raw);
+      if(!raw||!canon)return;
+      if(canon!==lastLocalCanonical){
+        lastLocal=raw;
+        lastLocalCanonical=canon;
+        clearTimeout(pushDelay);
+        pushDelay=setTimeout(()=>pushRaw(getLocalRaw()),1200);
+      }
+    },700);
+    remoteTimer=setInterval(checkRemote,7000);
   }
 
   async function signIn(){
@@ -266,16 +400,16 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
       client=window.supabase.createClient(SB_URL,SB_KEY);
       document.querySelectorAll('#outerNav .navBtn').forEach(b=>b.addEventListener('click',()=>navigateInner(b.dataset.page)));
       $('signIn').addEventListener('click',signIn);$('signUp').addEventListener('click',signUp);
-      $('signOut').addEventListener('click',async()=>{await client.auth.signOut();session=null;lastLocal=null;lastRemoteUpdated=null;showAuth();toast('Signed out. Local copy remains on this device.')});
+      $('signOut').addEventListener('click',async()=>{await client.auth.signOut();session=null;lastLocal=null;lastLocalCanonical=null;lastSyncedCanonical=null;lastRemoteUpdated=null;syncedUserId=null;showAuth();toast('Signed out. Local copy remains on this device.')});
       $('syncNow').addEventListener('click',async()=>{const raw=getLocalRaw();if(raw)await pushRaw(raw,true);await checkRemote()});
       $('password').addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});
-      client.auth.onAuthStateChange((event,newSession)=>{session=newSession;showAuth();if(session)setTimeout(initialSync,100)});
+      client.auth.onAuthStateChange((event,newSession)=>{const priorUser=syncedUserId;session=newSession;showAuth();if(session&&priorUser!==session.user.id)setTimeout(initialSync,100)});
       const {data,error}=await client.auth.getSession();
       if(error){status('Authentication error','bad');toast(error.message)}else{session=data.session;showAuth();startWatch();if(session)setTimeout(initialSync,600)}
     }catch(err){console.error(err);status('Cloud setup error','bad');toast('Cloud setup error: '+(err&&err.message?err.message:String(err)))}
   }
 
-  $('app').addEventListener('load',()=>{customizeInner();if(session)setTimeout(initialSync,200)});
+  $('app').addEventListener('load',()=>{customizeInner();if(pendingView){const view=pendingView;pendingView=null;setTimeout(()=>restoreInnerView(view),40)}if(session&&syncedUserId!==session.user.id)setTimeout(initialSync,200)});
   boot();
 })();
 </script>
