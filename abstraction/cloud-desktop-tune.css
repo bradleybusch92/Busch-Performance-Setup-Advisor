@@ -1,0 +1,38 @@
+/* Desktop layout refinements - v2026.09.30.10
+   Desktop only. Mobile/tablet UI is intentionally untouched. */
+@media(min-width:1051px){
+  /* Car Areas order:
+     Front End
+     LF | RF
+     Engine
+     Cockpit
+     LR | RR
+     Rear End
+     General Setup remains available from the visual car, but is omitted from this physical-area rail. */
+  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="Front End"]{order:1;grid-column:1/-1!important}
+  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="LF"]{order:2;grid-column:auto!important}
+  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="RF"]{order:3;grid-column:auto!important}
+  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="Engine"]{order:4;grid-column:1/-1!important}
+  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="Cockpit"]{order:5;grid-column:1/-1!important}
+  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="General Setup"]{display:none!important}
+  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="LR"]{order:6;grid-column:auto!important}
+  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="RR"]{order:7;grid-column:auto!important}
+  body.cloudDesktopMode .cloudDesktopAreaBtn[data-area="Rear End"]{order:8;grid-column:1/-1!important}
+
+  /* Make the desktop visual car wider and short enough to fit the Main Menu viewport without scrolling. */
+  body.cloudDesktopMode #home .carWrap{
+    width:100%!important;
+    max-width:none!important;
+    padding:4px 0 0!important;
+    margin:0 auto!important;
+    display:flex!important;
+    justify-content:center!important;
+    align-items:flex-start!important
+  }
+  body.cloudDesktopMode #home .car{
+    width:min(100%,1050px,calc((100vh - 140px)*1.18))!important;
+    height:auto!important;
+    aspect-ratio:1.18/1!important;
+    flex:none!important
+  }
+}
