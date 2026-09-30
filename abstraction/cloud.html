@@ -46,7 +46,7 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
     <button id="signUp" type="button">Create Account</button>
   </div>
 </div>
-<iframe id="app" class="frame" src="index.html?v=20260929-1930" title="Abstraction Owner's Manual"></iframe>
+<iframe id="app" class="frame" src="index.html?v=20260929-1945" title="Abstraction Owner's Manual"></iframe>
 <div id="toast" class="toast"></div>
 <script>
 (function(){
@@ -54,13 +54,43 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
   const SB_URL='https://gjlhegrcmaclikeoeonh.supabase.co';
   const SB_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9';
   const APP_KEY='abstractionOwnersManualWebV1';
-  const LOGO_URL='abstraction-logo-white.svg?v=20260929-1930';
+  const LOGO_URL='abstraction-logo-white.svg?v=20260929-1915';
   const $=id=>document.getElementById(id);
   let client=null,session=null,lastLocal=null,lastRemoteUpdated=null,pushing=false,pushDelay=null,localTimer=null,remoteTimer=null;
 
-  function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),3200)}
+  function toast(msg,duration=3200){$('toast').textContent=msg;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),duration)}
   function status(msg,cls=''){$('syncStatus').textContent=msg;$('syncStatus').className='status '+cls}
   function setOuterActive(page){document.querySelectorAll('#outerNav .navBtn').forEach(b=>b.classList.toggle('active',b.dataset.page===page))}
+
+  async function saveSetupAndReturn(doc,win){
+    const saveBtn=doc.getElementById('cloudSetupSave');
+    try{if(doc.activeElement&&typeof doc.activeElement.blur==='function')doc.activeElement.blur()}catch(e){}
+    if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Saving…'}
+    let ok=true;
+    const raw=getLocalRaw();
+    if(session&&raw){
+      while(pushing)await new Promise(resolve=>setTimeout(resolve,80));
+      ok=await pushRaw(raw,true);
+    }
+    if(!ok){
+      if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Save'}
+      return;
+    }
+    const confirm=doc.getElementById('cloudSaveConfirm');
+    if(confirm){confirm.textContent='✓ Saved';confirm.classList.add('show')}
+    toast('✓ Setup saved',1400);
+    await new Promise(resolve=>setTimeout(resolve,650));
+    doc.body.classList.remove('cloudFieldEditMode');
+    try{
+      if(win&&typeof win.show==='function')win.show('visual');
+      const area=doc.getElementById('area');if(area)area.classList.add('hidden');
+      const home=doc.getElementById('home');if(home)home.classList.remove('hidden');
+      if(win&&typeof win.scrollTo==='function')win.scrollTo(0,0);
+    }catch(e){}
+    setOuterActive('visual');
+    if(confirm)confirm.classList.remove('show');
+    if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Save'}
+  }
 
   function ensureSetupFieldEditor(doc,win){
     const pane=doc.getElementById('setupPane');
@@ -69,7 +99,7 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
     if(!controls){
       controls=doc.createElement('div');
       controls.id='cloudFieldEditControls';
-      controls.innerHTML='<button type="button" class="btn" id="cloudFieldEditToggle">Edit Fields</button>';
+      controls.innerHTML='<span id="cloudSaveConfirm" aria-live="polite"></span><div class="cloudSetupActions"><button type="button" class="btn" id="cloudFieldEditToggle">Edit Fields</button><button type="button" class="btn primary" id="cloudSetupSave">Save</button></div>';
       pane.appendChild(controls);
       const btn=doc.getElementById('cloudFieldEditToggle');
       btn.addEventListener('click',()=>{
@@ -77,6 +107,8 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
         doc.body.classList.toggle('cloudFieldEditMode',editing);
         btn.textContent=editing?'Done Editing':'Edit Fields';
       });
+      const saveBtn=doc.getElementById('cloudSetupSave');
+      saveBtn.addEventListener('click',()=>saveSetupAndReturn(doc,win));
     }
     const btn=doc.getElementById('cloudFieldEditToggle');
     if(btn)btn.textContent=doc.body.classList.contains('cloudFieldEditMode')?'Done Editing':'Edit Fields';
@@ -116,15 +148,24 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
           #setupPane .row input{width:100%!important;min-width:0;padding:7px 8px!important;min-height:34px}
           body.cloudFieldEditMode #setupPane .row{padding-right:41px!important}
           body.cloudFieldEditMode #setupPane .row .x{display:block!important;position:absolute;right:6px;top:6px;width:28px!important;height:28px!important;min-height:28px!important;padding:0!important}
-          #cloudFieldEditControls{display:flex;justify-content:flex-end;margin-top:10px;padding-top:8px;border-top:1px solid #292e35}
+          #cloudFieldEditControls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding-top:8px;border-top:1px solid #292e35}
+          .cloudSetupActions{display:flex;gap:7px;align-items:center;margin-left:auto}
           #cloudFieldEditToggle{min-width:105px}
+          #cloudSetupSave{min-width:78px}
+          #cloudSaveConfirm{color:#9bd5a5;font-weight:800;opacity:0;transform:translateY(2px);transition:opacity .15s ease,transform .15s ease;white-space:nowrap}
+          #cloudSaveConfirm.show{opacity:1;transform:translateY(0)}
           @media(max-width:650px){
+            html,body{max-width:100%!important;overflow-x:hidden!important}
+            .shell{max-width:100%!important;overflow-x:hidden!important}
             #cloudBrandBlock{width:min(100%,680px)} #cloudBrandLogo{max-height:190px}
             #setupPane .setupGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
-            #setupPane .row{padding:6px!important}
+            #setupPane .row{padding:6px!important;min-width:0!important}
             #setupPane .row label{font-size:10.5px!important;min-height:27px}
-            #setupPane .row input{padding:6px 7px!important;min-height:32px;font-size:13px}
+            #setupPane .row input{padding:6px 7px!important;min-height:34px;font-size:16px!important;max-width:100%!important}
+            #setupPane input,#setupPane select,#setupPane textarea{font-size:16px!important}
             body.cloudFieldEditMode #setupPane .row{padding-right:39px!important}
+            #cloudFieldEditControls{position:relative;flex-wrap:nowrap}
+            .cloudSetupActions{gap:6px}
           }
           @media(max-width:350px){#setupPane .setupGrid{grid-template-columns:1fr!important}}
         `;doc.head.appendChild(st);
@@ -166,13 +207,13 @@ button.primary,.navBtn.active{background:#eceff2;color:#111418;border-color:#ece
   }
 
   async function pushRaw(raw,force=false){
-    if(!client||!session||!raw||pushing)return;if(!force&&raw===lastLocal)return;
+    if(!client||!session||!raw)return false;if(pushing)return false;if(!force&&raw===lastLocal)return true;
     pushing=true;status('Saving to cloud…','warn');let parsed;
-    try{parsed=JSON.parse(raw)}catch(e){pushing=false;status('Local data error','bad');toast("The local Owner's Manual data could not be read.");return}
+    try{parsed=JSON.parse(raw)}catch(e){pushing=false;status('Local data error','bad');toast("The local Owner's Manual data could not be read.");return false}
     const {data,error}=await client.from('owner_manuals').upsert({user_id:session.user.id,state:parsed},{onConflict:'user_id'}).select('updated_at').single();
     pushing=false;
-    if(error){status('Cloud save failed','bad');toast('Cloud save failed: '+error.message);return}
-    lastLocal=raw;lastRemoteUpdated=data&&data.updated_at?data.updated_at:null;status('Synced','ok');
+    if(error){status('Cloud save failed','bad');toast('Cloud save failed: '+error.message);return false}
+    lastLocal=raw;lastRemoteUpdated=data&&data.updated_at?data.updated_at:null;status('Synced','ok');return true;
   }
 
   async function initialSync(){
