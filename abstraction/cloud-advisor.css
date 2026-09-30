@@ -1,0 +1,9 @@
+/* Embedded standalone Setup Advisor - v2026.09.30.3 */
+.cloudSetupAdvisorFrame{display:none;position:fixed;left:0;right:0;top:42px;bottom:0;width:100%;height:calc(100dvh - 42px);border:0;background:#0b0d10;z-index:9999}
+body.cloudAdvisorMode{overflow:hidden!important}
+body.cloudAdvisorMode>.shell{visibility:hidden!important;pointer-events:none!important}
+body.cloudAdvisorMode .cloudSetupAdvisorFrame{display:block!important}
+body.cloudAdvisorMode #cloudTopNav button.active:not(#cloudSetupAdvisorTab){background:transparent!important;color:var(--muted)!important;border-color:var(--line)!important;font-weight:400!important}
+body.cloudAdvisorMode #cloudSetupAdvisorTab{background:var(--light)!important;color:#111418!important;border-color:var(--light)!important;font-weight:800!important}
+body.cloudAdvisorMode .cloudVersion{display:none!important}
+@media(max-width:650px){.cloudSetupAdvisorFrame{top:40px;height:calc(100dvh - 40px)}}
