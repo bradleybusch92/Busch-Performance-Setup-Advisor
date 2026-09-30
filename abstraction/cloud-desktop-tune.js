@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const VERSION='v2026.09.30.10';
+const VERSION='v2026.09.30.11';
 function setVersion(){
   const v=document.getElementById('cloudVersion');
   if(v&&v.textContent!==VERSION)v.textContent=VERSION;
