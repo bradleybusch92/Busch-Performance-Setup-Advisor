@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const CLOUD_VERSION='v2026.09.29.9';
+const CLOUD_VERSION='v2026.09.29.10';
 const CLOUD_SB_URL='https://gjlhegrcmaclikeoeonh.supabase.co';
 const CLOUD_SB_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9';
 const CLOUD_SYSTEMS=['Engine','Fuel System','Cooling','Exhaust','Electrical','Instrumentation','Drivetrain','Suspension','Steering','Brakes','Wheels & Tires','Controls','Safety','Chassis / Body','General / Miscellaneous'];
@@ -24,6 +24,14 @@ async function cloudEnsureSession(){
   cloudSession=data.session;
   return cloudSession;
 }
+async function cloudFreshRead(sess){
+  const future=new Date(Date.now()+60000).toISOString();
+  const q='select=state,updated_at&user_id=eq.'+encodeURIComponent(sess.user.id)+'&updated_at=lt.'+encodeURIComponent(future)+'&order=updated_at.desc&limit=1';
+  const r=await fetch(CLOUD_SB_URL+'/rest/v1/owner_manuals?'+q,{cache:'no-store',headers:{apikey:CLOUD_SB_KEY,Authorization:'Bearer '+sess.access_token,Accept:'application/json','Cache-Control':'no-cache','Pragma':'no-cache'}});
+  if(!r.ok)throw new Error('Cloud read failed: '+r.status);
+  const rows=await r.json();
+  return rows[0]||null;
+}
 async function cloudSave(){
   if(cloudSaving)return false;
   const sess=await cloudEnsureSession();
@@ -38,20 +46,31 @@ async function cloudSave(){
     if(error||!data||cloudCanon(data.state)!==cloudCanon(outgoing)){
       cloudToast('Cloud save failed. Changes were not confirmed.',2600);return false;
     }
-    state=data.state;
+    await new Promise(r=>setTimeout(r,120));
+    const fresh=await cloudFreshRead(sess);
+    if(!fresh?.state||cloudCanon(fresh.state)!==cloudCanon(outgoing)){
+      cloudToast('Save reached cloud, but refresh verification failed.',3000);return false;
+    }
+    state=fresh.state;
     save();
     cloudToast('✓ Saved to cloud',1400);
     return true;
+  }catch(e){
+    console.warn('cloud save',e);
+    cloudToast('Cloud save could not be verified.',2600);
+    return false;
   }finally{cloudSaving=false}
 }
 async function cloudReloadFromServer(){
   const sess=await cloudEnsureSession();if(!sess)return false;
-  const {data,error}=await cloudClient.from('owner_manuals').select('state,updated_at').eq('user_id',sess.user.id).maybeSingle();
-  if(error||!data?.state)return false;
-  state=data.state;save();renderAll();
-  if(!ce('area').classList.contains('hidden')&&typeof renderArea==='function')renderArea();
-  cloudTopActive();
-  return true;
+  try{
+    const data=await cloudFreshRead(sess);
+    if(!data?.state)return false;
+    state=data.state;save();renderAll();
+    if(!ce('area').classList.contains('hidden')&&typeof renderArea==='function')renderArea();
+    cloudTopActive();
+    return true;
+  }catch(e){console.warn('cloud reload',e);return false}
 }
 function cloudTopActive(){
   const homeVisible=!ce('visual').classList.contains('hidden')&&!ce('home').classList.contains('hidden')&&ce('area').classList.contains('hidden');
@@ -122,7 +141,7 @@ async function cloudBuildUI(){
   let top=ce('cloudTopbar');
   if(!top){
     top=document.createElement('div');top.id='cloudTopbar';top.className='cloudTopbar';
-    top.innerHTML='<img class="cloudTopLogo" src="abstraction-logo-white.svg?v=20260929-2145-v9" alt="Abstraction"><div class="cloudTopNav" id="cloudTopNav"><button type="button" data-page="visual">Main Menu</button><button type="button" data-page="systems">Systems</button><button type="button" data-page="index">Component Index</button></div><button type="button" class="cloudTopAdd" id="cloudTopAdd">+ Add Component</button>';
+    top.innerHTML='<img class="cloudTopLogo" src="abstraction-logo-white.svg?v=20260929-2155-v10" alt="Abstraction"><div class="cloudTopNav" id="cloudTopNav"><button type="button" data-page="visual">Main Menu</button><button type="button" data-page="systems">Systems</button><button type="button" data-page="index">Component Index</button></div><button type="button" class="cloudTopAdd" id="cloudTopAdd">+ Add Component</button>';
     document.body.prepend(top);
     document.querySelectorAll('#cloudTopNav button').forEach(b=>b.onclick=async()=>{
       const p=b.dataset.page;
