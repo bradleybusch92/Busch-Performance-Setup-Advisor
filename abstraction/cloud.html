@@ -15,7 +15,7 @@
 <script>
 (async()=>{
 'use strict';
-const B_URL='https://gjlhegrcmaclikeoeonh.supabase.co',B_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9',B_STATE_KEY='abstractionOwnersManualWebV1',B_VER='20260930-1938-v14';
+const B_URL='https://gjlhegrcmaclikeoeonh.supabase.co',B_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9',B_STATE_KEY='abstractionOwnersManualWebV1',B_VER='20260930-2005-v15';
 const g=id=>document.getElementById(id);
 const bc=window.supabase.createClient(B_URL,B_KEY);
 async function freshCloudState(sess){
@@ -50,7 +50,7 @@ async function launch(sess){
     const oldInit="let state;try{state=JSON.parse(localStorage.getItem(KEY))||makeSeed()}catch(e){state=makeSeed()}";
     const newInit="let state;try{state=window.__ABSTRACTION_CLOUD_BOOT||makeSeed()}catch(e){state=makeSeed()}";
     h=h.replace(oldInit,newInit);
-    h=h.replace('</body>','<script src="cloud-sync-pre.js?v='+B_VER+'"><\/script><script src="cloud-enhance.js?v='+B_VER+'"><\/script><script src="cloud-advisor.js?v='+B_VER+'"><\/script><script src="cloud-engine.js?v='+B_VER+'"><\/script><script src="cloud-account.js?v='+B_VER+'"><\/script><script src="cloud-login-ui.js?v='+B_VER+'"><\/script><script src="cloud-desktop.js?v='+B_VER+'"><\/script><script src="cloud-desktop-tune.js?v='+B_VER+'"><\/script><script src="cloud-copy-component.js?v='+B_VER+'"><\/script><script src="cloud-sync.js?v='+B_VER+'"><\/script></body>');
+    h=h.replace('</body>','<script src="cloud-sync-pre.js?v='+B_VER+'"><\/script><script src="cloud-enhance.js?v='+B_VER+'"><\/script><script src="cloud-advisor.js?v='+B_VER+'"><\/script><script src="cloud-engine.js?v='+B_VER+'"><\/script><script src="cloud-account.js?v='+B_VER+'"><\/script><script src="cloud-login-ui.js?v='+B_VER+'"><\/script><script src="cloud-desktop.js?v='+B_VER+'"><\/script><script src="cloud-desktop-tune.js?v='+B_VER+'"><\/script><script src="cloud-copy-component.js?v='+B_VER+'"><\/script><script src="cloud-sync.js?v='+B_VER+'"><\/script><script src="cloud-save-bridge.js?v='+B_VER+'"><\/script></body>');
     document.open();document.write(h);document.close();
   }catch(e){
     console.warn('app shell',e);
