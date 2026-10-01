@@ -8,14 +8,14 @@
 <title>Abstraction Owner's Manual</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#090b0e;color:#f3f5f7;font:14px/1.4 Arial,sans-serif}.boot{padding:24px;color:#a6adb6}.login{width:min(430px,calc(100% - 28px));margin:56px auto 0;padding:14px;border:1px solid #353b44;border-radius:12px;background:#13161a}.login h3{margin:0 0 10px}.login input,.login button{width:100%;margin-top:8px;min-height:38px;border:1px solid #353b44;border-radius:8px;padding:8px;background:#1a1e23;color:#f3f5f7;font:inherit}.login input{font-size:16px}.login button.primary{background:#eceff2;color:#111418;font-weight:800}.status{margin-top:9px;color:#a6adb6;font-size:12px}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#090b0e;color:#f3f5f7;font:14px/1.4 Arial,sans-serif}.boot{padding:24px;color:#a6adb6}.boot button{margin-top:12px;min-height:36px;border:1px solid #353b44;border-radius:8px;padding:7px 12px;background:#eceff2;color:#111418;font:inherit;font-weight:800}.login{width:min(430px,calc(100% - 28px));margin:56px auto 0;padding:14px;border:1px solid #353b44;border-radius:12px;background:#13161a}.login h3{margin:0 0 10px}.login input,.login button{width:100%;margin-top:8px;min-height:38px;border:1px solid #353b44;border-radius:8px;padding:8px;background:#1a1e23;color:#f3f5f7;font:inherit}.login input{font-size:16px}.login button.primary{background:#eceff2;color:#111418;font-weight:800}.status{margin-top:9px;color:#a6adb6;font-size:12px}
 </style></head><body>
-<div id="bootMsg" class="boot">Loading cloud data…</div>
+<div id="bootMsg" class="boot">Loading current cloud data…</div>
 <div id="login" class="login" style="display:none"><h3>Abstraction Owner's Manual</h3><input id="email" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Email or Username"><input id="password" type="password" autocomplete="current-password" placeholder="Password"><button id="signIn" class="primary" type="button">Sign In</button><button id="signUp" type="button">Create Account</button><div id="status" class="status"></div></div>
 <script>
 (async()=>{
 'use strict';
-const B_URL='https://gjlhegrcmaclikeoeonh.supabase.co',B_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9',B_STATE_KEY='abstractionOwnersManualWebV1',B_VER='20260930-1225-v12';
+const B_URL='https://gjlhegrcmaclikeoeonh.supabase.co',B_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9',B_STATE_KEY='abstractionOwnersManualWebV1',B_VER='20260930-1850-v13';
 const g=id=>document.getElementById(id);
 const bc=window.supabase.createClient(B_URL,B_KEY);
 async function freshCloudState(sess){
@@ -26,23 +26,37 @@ async function freshCloudState(sess){
   return rows[0]||null;
 }
 async function launch(sess){
-  g('bootMsg').style.display='block';g('login').style.display='none';
-  let bootState=null;
+  g('bootMsg').style.display='block';g('bootMsg').textContent='Loading current cloud data…';g('login').style.display='none';
+  let bootState=null,bootUpdatedAt='';
   try{
     const data=await freshCloudState(sess);
-    if(data?.state){bootState=data.state;localStorage.setItem(B_STATE_KEY,JSON.stringify(data.state))}
-  }catch(e){console.warn(e)}
+    bootState=data?.state||null;
+    bootUpdatedAt=data?.updated_at||'';
+    if(bootState)localStorage.setItem(B_STATE_KEY,JSON.stringify(bootState));
+    else localStorage.removeItem(B_STATE_KEY);
+  }catch(e){
+    console.warn('cloud bootstrap',e);
+    g('bootMsg').innerHTML='Could not load the current cloud Owner\'s Manual. A cached browser copy will not be opened because the cloud is the source of truth.<br><button type="button" id="retryCloud">Retry Cloud Load</button>';
+    g('retryCloud').onclick=()=>launch(sess);
+    return;
+  }
   try{
     const r=await fetch('index.html?v='+B_VER+'&t='+Date.now(),{cache:'no-store',credentials:'same-origin',headers:{'Cache-Control':'no-cache','Pragma':'no-cache'}});
+    if(!r.ok)throw new Error('App shell load failed: '+r.status);
     let h=await r.text();
     const payload=JSON.stringify(bootState).replace(/</g,'\\u003c');
-    h=h.replace('</head>','<script>window.__ABSTRACTION_CLOUD_BOOT='+payload+';<\/script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script><link rel="stylesheet" href="cloud-enhance.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-advisor.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-account.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-desktop.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-desktop-tune.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-copy-component.css?v='+B_VER+'"></head>');
+    const updatedPayload=JSON.stringify(bootUpdatedAt).replace(/</g,'\\u003c');
+    h=h.replace('</head>','<script>window.__ABSTRACTION_CLOUD_BOOT='+payload+';window.__ABSTRACTION_CLOUD_UPDATED_AT='+updatedPayload+';<\/script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script><link rel="stylesheet" href="cloud-enhance.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-advisor.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-account.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-desktop.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-desktop-tune.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-copy-component.css?v='+B_VER+'"></head>');
     const oldInit="let state;try{state=JSON.parse(localStorage.getItem(KEY))||makeSeed()}catch(e){state=makeSeed()}";
-    const newInit="let state;try{state=window.__ABSTRACTION_CLOUD_BOOT||JSON.parse(localStorage.getItem(KEY))||makeSeed()}catch(e){state=window.__ABSTRACTION_CLOUD_BOOT||makeSeed()}";
+    const newInit="let state;try{state=window.__ABSTRACTION_CLOUD_BOOT||makeSeed()}catch(e){state=makeSeed()}";
     h=h.replace(oldInit,newInit);
-    h=h.replace('</body>','<script src="cloud-enhance.js?v='+B_VER+'"><\/script><script src="cloud-advisor.js?v='+B_VER+'"><\/script><script src="cloud-engine.js?v='+B_VER+'"><\/script><script src="cloud-account.js?v='+B_VER+'"><\/script><script src="cloud-login-ui.js?v='+B_VER+'"><\/script><script src="cloud-desktop.js?v='+B_VER+'"><\/script><script src="cloud-desktop-tune.js?v='+B_VER+'"><\/script><script src="cloud-copy-component.js?v='+B_VER+'"><\/script></body>');
+    h=h.replace('</body>','<script src="cloud-sync-pre.js?v='+B_VER+'"><\/script><script src="cloud-enhance.js?v='+B_VER+'"><\/script><script src="cloud-advisor.js?v='+B_VER+'"><\/script><script src="cloud-engine.js?v='+B_VER+'"><\/script><script src="cloud-account.js?v='+B_VER+'"><\/script><script src="cloud-login-ui.js?v='+B_VER+'"><\/script><script src="cloud-desktop.js?v='+B_VER+'"><\/script><script src="cloud-desktop-tune.js?v='+B_VER+'"><\/script><script src="cloud-copy-component.js?v='+B_VER+'"><\/script><script src="cloud-sync.js?v='+B_VER+'"><\/script></body>');
     document.open();document.write(h);document.close();
-  }catch(e){g('bootMsg').textContent="Could not load the Owner's Manual. Refresh and try again."}
+  }catch(e){
+    console.warn('app shell',e);
+    g('bootMsg').innerHTML='Could not load the Owner\'s Manual application files.<br><button type="button" id="retryCloud">Retry</button>';
+    g('retryCloud').onclick=()=>launch(sess);
+  }
 }
 async function showLogin(){g('bootMsg').style.display='none';g('login').style.display='block'}
 async function signIn(){
