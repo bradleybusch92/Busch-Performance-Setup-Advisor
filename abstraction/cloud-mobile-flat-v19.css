@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&display=swap');
+
+/* Flat grayscale mobile/tablet theme - v2026.09.30.19
+   Layout stays the same. This file changes appearance only below 1051px. */
+:root{
+  --bg:#161616;
+  --p:#1b1b1b;
+  --p2:#232323;
+  --line:#3a3a3a;
+  --text:#f2f2f2;
+  --muted:#a2a2a2;
+  --light:#d9d9d9;
+  --red:#8b8b8b;
+}
+
+@media(max-width:1050px){
+  html,
+  body,
+  .shell{
+    background:#161616!important;
+    color:#f2f2f2!important;
+    background-image:none!important;
+  }
+
+  body,
+  input,
+  select,
+  textarea,
+  table,
+  .meta,
+  .hint,
+  .detail,
+  .box,
+  dialog{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif!important;
+  }
+
+  button,
+  .btn,
+  .tab,
+  .zone,
+  .cloudTopNav button,
+  .cloudTopAdd{
+    font-family:"Inter Tight",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif!important;
+  }
+
+  .cloudTopbar{
+    background:#101010!important;
+    border-color:#343434!important;
+    box-shadow:none!important;
+  }
+  .cloudTopNav button,
+  .cloudTopAdd{
+    color:#b8b8b8!important;
+    border-color:#3a3a3a!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+  .cloudTopNav button.active{
+    background:#d9d9d9!important;
+    color:#111!important;
+    border-color:#d9d9d9!important;
+  }
+  .cloudTopAdd{
+    background:#1d1d1d!important;
+    color:#f2f2f2!important;
+  }
+
+  .profiles,
+  .panel,
+  #home.panel,
+  #area.panel{
+    background:#1b1b1b!important;
+    border-color:#3a3a3a!important;
+    box-shadow:none!important;
+  }
+  .profiles select,
+  input,
+  select,
+  textarea{
+    background:#111!important;
+    color:#f2f2f2!important;
+    border-color:#444!important;
+    box-shadow:none!important;
+  }
+  .profiles .btn,
+  #cloudBottom .btn,
+  .btn{
+    background:#1b1b1b!important;
+    color:#ededed!important;
+    border-color:#3a3a3a!important;
+    box-shadow:none!important;
+  }
+  .btn.primary,
+  .tab.active{
+    background:#d9d9d9!important;
+    color:#111!important;
+    border-color:#d9d9d9!important;
+  }
+
+  #home .panelHead{
+    background:transparent!important;
+    border-color:#363636!important;
+  }
+  #home .cloudMainHead b{color:#f1f1f1!important}
+  #home .cloudMainHead .hint{color:#909090!important}
+
+  /* Remove the two visual-car frames while keeping the existing button layout. */
+  #home .car{
+    background:transparent!important;
+    background-image:none!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+  }
+  #home .car:before{
+    display:none!important;
+    content:none!important;
+    border:0!important;
+    box-shadow:none!important;
+  }
+
+  /* Main-menu visual car buttons: light gray, black text, flat. */
+  #home .zone{
+    background:#d6d6d6!important;
+    background-image:none!important;
+    color:#111!important;
+    border:1px solid #b6b6b6!important;
+    border-radius:8px!important;
+    box-shadow:none!important;
+    font-weight:750!important;
+    letter-spacing:.01em!important;
+  }
+  #home .zone:active{
+    background:#ededed!important;
+    color:#000!important;
+  }
+
+  /* Uniform centerline buttons. */
+  #home .zone[data-area="Front End"],
+  #home .zone[data-area="Engine"],
+  #home .zone[data-area="Cockpit"],
+  #home .zone[data-area="General Setup"],
+  #home .zone[data-area="Rear End"]{
+    width:32%!important;
+    height:11%!important;
+  }
+
+  /* Preserve the existing centerline positions while overriding Engine's injected sizing. */
+  #home .zone[data-area="Front End"]{left:50%!important;right:auto!important;top:10%!important;bottom:auto!important;transform:translateX(-50%)!important}
+  #home .zone[data-area="Engine"]{left:50%!important;right:auto!important;top:24%!important;bottom:auto!important;transform:translateX(-50%)!important}
+  #home .zone[data-area="Cockpit"]{left:50%!important;right:auto!important;top:36%!important;bottom:auto!important;transform:translateX(-50%)!important}
+  #home .zone[data-area="General Setup"]{left:50%!important;right:auto!important;top:52%!important;bottom:auto!important;transform:translateX(-50%)!important}
+  #home .zone[data-area="Rear End"]{left:50%!important;right:auto!important;top:auto!important;bottom:8%!important;transform:translateX(-50%)!important}
+
+  .areaTop,
+  .tabs,
+  #cloudBottom{
+    background:#161616!important;
+    border-color:#363636!important;
+    box-shadow:none!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  .tab{
+    background:#1b1b1b!important;
+    color:#aaa!important;
+    border-color:#3a3a3a!important;
+  }
+
+  #setupPane .row,
+  .card,
+  .sys,
+  .cloudFileCard{
+    background:#1b1b1b!important;
+    border-color:#363636!important;
+    box-shadow:none!important;
+  }
+  #setupPane .row label{color:#d1d1d1!important}
+  .field label,
+  .notes label,
+  .box h4,
+  .cloudEditFilesTitle{color:#9a9a9a!important}
+
+  .table,
+  #index .table{
+    background:#171717!important;
+    border-color:#3a3a3a!important;
+  }
+  th,
+  #index th{
+    background:#252525!important;
+    color:#d7d7d7!important;
+  }
+  td,
+  #index td{border-color:#333!important}
+
+  dialog{
+    background:#181818!important;
+    color:#f2f2f2!important;
+    border-color:#424242!important;
+    box-shadow:none!important;
+  }
+  .mh,
+  .mf{border-color:#363636!important}
+  .box{
+    background:#141414!important;
+    border-color:#363636!important;
+  }
+
+  .cloudFilePreview{
+    background:#141414!important;
+    border-color:#3a3a3a!important;
+  }
+  .cloudFileEmpty{border-color:#444!important;color:#999!important}
+  .cloudToast{
+    background:#181818!important;
+    color:#f2f2f2!important;
+    border-color:#505050!important;
+    box-shadow:none!important;
+  }
+  .cloudVersion{color:#8d8d8d!important}
+}
