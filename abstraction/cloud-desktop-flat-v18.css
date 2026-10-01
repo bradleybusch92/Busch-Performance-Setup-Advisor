@@ -1,0 +1,230 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&display=swap');
+
+/* Flat grayscale desktop theme - v2026.09.30.18
+   Desktop only. Mobile/tablet UI remains untouched below 1051px. */
+@media(min-width:1051px){
+  /* Neutral grayscale foundation */
+  html{background:#161616!important}
+  body.cloudDesktopMode,
+  body.cloudDesktopMode .shell{
+    background:#161616!important;
+    color:#f2f2f2!important
+  }
+
+  /* Keep data-entry and reading surfaces on the normal system UI font. */
+  body.cloudDesktopMode,
+  body.cloudDesktopMode input,
+  body.cloudDesktopMode select,
+  body.cloudDesktopMode textarea,
+  body.cloudDesktopMode table,
+  body.cloudDesktopMode .meta,
+  body.cloudDesktopMode .hint,
+  body.cloudDesktopMode .detail,
+  body.cloudDesktopMode .box,
+  body.cloudDesktopMode dialog{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif!important
+  }
+
+  /* Inter Tight is reserved for controls/buttons where the industrial display face helps. */
+  body.cloudDesktopMode button,
+  body.cloudDesktopMode .btn,
+  body.cloudDesktopMode .tab,
+  body.cloudDesktopMode .cloudDesktopAreaBtn,
+  body.cloudDesktopMode .cloudTopAdd,
+  body.cloudDesktopMode #home .zone{
+    font-family:"Inter Tight",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif!important
+  }
+
+  /* Sidebar: flat, neutral, no glow/shadow. */
+  body.cloudDesktopMode .cloudTopbar{
+    background:#101010!important;
+    border-right:1px solid #343434!important;
+    box-shadow:none!important
+  }
+  body.cloudDesktopMode .cloudTopNav button,
+  body.cloudDesktopMode .cloudTopAdd{
+    color:#b8b8b8!important
+  }
+  body.cloudDesktopMode .cloudTopNav button:hover,
+  body.cloudDesktopMode .cloudTopAdd:hover,
+  body.cloudDesktopMode .cloudDesktopAreaBtn:hover{
+    background:#202020!important;
+    color:#fff!important;
+    border-color:#414141!important
+  }
+  body.cloudDesktopMode .cloudTopNav button.active,
+  body.cloudDesktopMode .cloudTopNav #cloudSetupAdvisorTab.active,
+  body.cloudDesktopMode.cloudAdvisorMode #cloudSetupAdvisorTab{
+    background:#d9d9d9!important;
+    color:#111!important;
+    border-color:#d9d9d9!important
+  }
+  body.cloudDesktopMode .cloudTopAdd{
+    background:#1d1d1d!important;
+    border-color:#3e3e3e!important;
+    color:#f2f2f2!important
+  }
+  body.cloudDesktopMode .cloudDesktopAreas,
+  body.cloudDesktopMode .profiles,
+  body.cloudDesktopMode #cloudBottom{
+    border-color:#333!important
+  }
+  body.cloudDesktopMode .cloudDesktopSectionTitle,
+  body.cloudDesktopMode .profiles label{
+    color:#858585!important
+  }
+  body.cloudDesktopMode .cloudDesktopAreaBtn{
+    background:#191919!important;
+    border-color:#343434!important;
+    color:#bdbdbd!important
+  }
+  body.cloudDesktopMode .cloudDesktopAreaBtn.active{
+    background:#2a2a2a!important;
+    border-color:#707070!important;
+    color:#fff!important
+  }
+  body.cloudDesktopMode .profiles select{
+    background:#171717!important;
+    border-color:#3c3c3c!important;
+    color:#f0f0f0!important
+  }
+  body.cloudDesktopMode #cloudBottomEmail{color:#949494!important}
+  body.cloudDesktopMode #cloudBottom .btn,
+  body.cloudDesktopMode .profiles .btn{
+    background:#1b1b1b!important;
+    border-color:#3a3a3a!important;
+    color:#ededed!important
+  }
+
+  /* Main menu header */
+  body.cloudDesktopMode #home .panelHead{
+    border-color:#363636!important
+  }
+  body.cloudDesktopMode #home .cloudMainHead b{color:#f1f1f1!important}
+  body.cloudDesktopMode #home .cloudMainHead .hint{color:#8f8f8f!important}
+
+  /* Remove both visual-car frames: the outer/background frame and the inner perimeter frame. */
+  body.cloudDesktopMode #home .car{
+    background:transparent!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important
+  }
+  body.cloudDesktopMode #home .car:before{
+    display:none!important;
+    content:none!important;
+    border:0!important;
+    box-shadow:none!important
+  }
+
+  /* Main-menu car-area buttons: flat light gray with black text. */
+  body.cloudDesktopMode #home .zone{
+    background:#d6d6d6!important;
+    color:#111!important;
+    border:1px solid #b6b6b6!important;
+    border-radius:8px!important;
+    box-shadow:none!important;
+    font-weight:750!important;
+    letter-spacing:.01em!important;
+    transition:background .12s ease,border-color .12s ease!important
+  }
+  body.cloudDesktopMode #home .zone:hover{
+    background:#ededed!important;
+    color:#000!important;
+    border-color:#f2f2f2!important
+  }
+
+  /* Make the five centerline buttons exactly the same size. */
+  body.cloudDesktopMode #home .zone[data-area="Front End"],
+  body.cloudDesktopMode #home .zone[data-area="Engine"],
+  body.cloudDesktopMode #home .zone[data-area="Cockpit"],
+  body.cloudDesktopMode #home .zone[data-area="General Setup"],
+  body.cloudDesktopMode #home .zone[data-area="Rear End"]{
+    width:30%!important;
+    height:11%!important
+  }
+
+  /* Flat grayscale workspaces. */
+  body.cloudDesktopMode .areaTop,
+  body.cloudDesktopMode .tabs{
+    background:#161616!important;
+    border-color:#363636!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important
+  }
+  body.cloudDesktopMode .tab{
+    background:#1b1b1b!important;
+    border-color:#3a3a3a!important;
+    color:#a9a9a9!important
+  }
+  body.cloudDesktopMode .tab.active,
+  body.cloudDesktopMode .btn.primary{
+    background:#d9d9d9!important;
+    border-color:#d9d9d9!important;
+    color:#111!important
+  }
+  body.cloudDesktopMode #setupPane .row,
+  body.cloudDesktopMode .card,
+  body.cloudDesktopMode .sys,
+  body.cloudDesktopMode .cloudFileCard{
+    background:#1b1b1b!important;
+    border-color:#363636!important;
+    box-shadow:none!important
+  }
+  body.cloudDesktopMode .card:hover,
+  body.cloudDesktopMode .sys:hover{
+    background:#232323!important;
+    border-color:#565656!important
+  }
+  body.cloudDesktopMode input,
+  body.cloudDesktopMode select,
+  body.cloudDesktopMode textarea{
+    background:#111!important;
+    color:#f2f2f2!important;
+    border-color:#444!important;
+    box-shadow:none!important
+  }
+  body.cloudDesktopMode #setupPane .row label{color:#d1d1d1!important}
+  body.cloudDesktopMode .notes label,
+  body.cloudDesktopMode .field label,
+  body.cloudDesktopMode .box h4{color:#9a9a9a!important}
+
+  /* Index/table surfaces */
+  body.cloudDesktopMode #systems h2,
+  body.cloudDesktopMode #index h2{
+    border-color:#363636!important
+  }
+  body.cloudDesktopMode #index .search{background:#161616!important}
+  body.cloudDesktopMode #index .table{
+    background:#171717!important;
+    border-color:#3a3a3a!important
+  }
+  body.cloudDesktopMode #index th{
+    background:#252525!important;
+    color:#d7d7d7!important
+  }
+  body.cloudDesktopMode #index td{border-color:#333!important}
+  body.cloudDesktopMode #index tbody tr:hover{background:#222!important}
+
+  /* Dialogs and secondary surfaces */
+  body.cloudDesktopMode dialog{
+    background:#181818!important;
+    color:#f2f2f2!important;
+    border-color:#424242!important;
+    box-shadow:none!important
+  }
+  body.cloudDesktopMode .mh,
+  body.cloudDesktopMode .mf{border-color:#363636!important}
+  body.cloudDesktopMode .box{
+    background:#141414!important;
+    border-color:#363636!important
+  }
+  body.cloudDesktopMode .cloudAccountSection,
+  body.cloudDesktopMode .cloudFileCard,
+  body.cloudDesktopMode .cloudFilePreview{
+    border-color:#3a3a3a!important
+  }
+
+  /* Setup Advisor desktop pane should sit on the same flat neutral base. */
+  body.cloudDesktopMode .cloudSetupAdvisorFrame{background:#161616!important}
+}
