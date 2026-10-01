@@ -1,0 +1,60 @@
+/* Owner's Manual setup/measurements polish - v2026.10.01.26
+   Presentation only. Parts & Components cards are intentionally untouched. */
+
+/* Setup / Measurements should read like a technical data sheet rather than
+   a collection of individual cards. Keep the actual value inputs boxed so
+   labels and editable values remain easy to scan. */
+#setupPane .setupGrid{
+  column-gap:12px!important;
+  row-gap:4px!important;
+}
+#setupPane .row{
+  background:transparent!important;
+  background-image:none!important;
+  border:0!important;
+  border-bottom:1px solid #303030!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:7px 2px 10px!important;
+}
+#setupPane .row label{
+  color:#c8c8c8!important;
+  font-weight:600!important;
+  line-height:1.15!important;
+  margin:0!important;
+}
+#setupPane .row input,
+#setupPane .row select,
+#setupPane .row textarea{
+  background:#111!important;
+  border:1px solid #414141!important;
+  border-radius:6px!important;
+  box-shadow:none!important;
+}
+#setupPane .row input:focus,
+#setupPane .row select:focus,
+#setupPane .row textarea:focus{
+  border-color:#777!important;
+  outline:none!important;
+}
+
+/* Preserve room for the field-delete control when field edit mode is active. */
+body.cloudFieldEditMode #setupPane .row{
+  padding-right:40px!important;
+}
+
+@media(max-width:650px){
+  #setupPane .setupGrid{
+    column-gap:10px!important;
+    row-gap:3px!important;
+  }
+  #setupPane .row{
+    padding:7px 1px 9px!important;
+  }
+  #setupPane .row label{
+    min-height:25px!important;
+  }
+  body.cloudFieldEditMode #setupPane .row{
+    padding-right:39px!important;
+  }
+}
