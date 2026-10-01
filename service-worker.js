@@ -1,4 +1,4 @@
-const CACHE_NAME = 'busch-setup-advisor-v2';
+const CACHE_NAME = 'busch-setup-advisor-v3';
 const APP_SHELL = [
   './',
   './index.html',
@@ -32,16 +32,10 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   const isAbstraction = url.pathname.includes('/Busch-Performance-Setup-Advisor/abstraction/');
 
+  // The cloud Owner's Manual must always come from the network. Do not put
+  // any Abstraction HTML, JS, CSS, or data responses into the service-worker cache.
   if (isAbstraction) {
-    event.respondWith(
-      fetch(event.request, { cache: 'no-store' }).then(response => {
-        if (response && response.status === 200 && response.type !== 'opaque') {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
-        }
-        return response;
-      }).catch(() => caches.match(event.request))
-    );
+    event.respondWith(fetch(event.request, { cache: 'no-store' }));
     return;
   }
 
