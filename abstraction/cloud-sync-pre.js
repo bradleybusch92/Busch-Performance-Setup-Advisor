@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const SYNC_VERSION='v2026.09.30.13';
+const SYNC_VERSION='v2026.09.30.14';
 let baselineRaw=null;
 try{
   baselineRaw=JSON.parse(JSON.stringify(window.__ABSTRACTION_CLOUD_BOOT||state||null));
