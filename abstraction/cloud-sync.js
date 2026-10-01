@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const SYNC_VERSION='v2026.09.30.14';
+const SYNC_VERSION='v2026.09.30.15';
 const SB_URL='https://gjlhegrcmaclikeoeonh.supabase.co';
 const SB_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9';
 const sync=window.__ABSTRACTION_SYNC||(window.__ABSTRACTION_SYNC={version:SYNC_VERSION});
