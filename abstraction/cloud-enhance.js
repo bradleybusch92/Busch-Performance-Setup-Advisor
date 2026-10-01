@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const CLOUD_VERSION='v2026.09.30.2';
+const CLOUD_VERSION='v2026.09.30.14';
 const CLOUD_SB_URL='https://gjlhegrcmaclikeoeonh.supabase.co';
 const CLOUD_SB_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9';
 const CLOUD_BUCKET='owner-manual-files';
@@ -51,6 +51,30 @@ async function cloudFreshRead(sess){
   const rows=await r.json();
   return rows[0]||null;
 }
+function cloudMarkConfirmed(row){
+  if(!row?.state)return;
+  window.__ABSTRACTION_CLOUD_UPDATED_AT=row.updated_at||window.__ABSTRACTION_CLOUD_UPDATED_AT||'';
+  const sync=window.__ABSTRACTION_SYNC;
+  if(sync){
+    sync.baselineRaw=JSON.parse(JSON.stringify(row.state));
+    sync.baselineCanon=cloudCanon(row.state);
+    sync.lastUpdatedAt=row.updated_at||sync.lastUpdatedAt||'';
+  }
+}
+async function cloudBackgroundVerify(sess,outgoing){
+  for(const delay of [700,1400]){
+    await new Promise(r=>setTimeout(r,delay));
+    try{
+      const fresh=await cloudFreshRead(sess);
+      if(fresh?.state&&cloudCanon(fresh.state)===cloudCanon(outgoing)){
+        cloudMarkConfirmed(fresh);
+        return true;
+      }
+    }catch(e){console.warn('background cloud verification',e)}
+  }
+  console.warn('Background cloud verification did not match the already-confirmed save.');
+  return false;
+}
 async function cloudSave(){
   if(cloudSaving)return false;
   const sess=await cloudEnsureSession();
@@ -66,19 +90,16 @@ async function cloudSave(){
     if(error||!data||cloudCanon(data.state)!==cloudCanon(outgoing)){
       cloudToast('Cloud save failed. Changes were not confirmed.',2600);return false;
     }
-    await new Promise(r=>setTimeout(r,120));
-    const fresh=await cloudFreshRead(sess);
-    if(!fresh?.state||cloudCanon(fresh.state)!==cloudCanon(outgoing)){
-      cloudToast('Save reached cloud, but verification failed.',3000);return false;
-    }
-    state=fresh.state;
+    state=data.state;
     cloudInitFileState();
     save();
+    cloudMarkConfirmed(data);
     cloudToast('✓ Saved to cloud',1400);
+    cloudBackgroundVerify(sess,outgoing);
     return true;
   }catch(e){
     console.warn('cloud save',e);
-    cloudToast('Cloud save could not be verified.',2600);
+    cloudToast('Cloud save failed.',2600);
     return false;
   }finally{cloudSaving=false}
 }
@@ -89,6 +110,7 @@ async function cloudReloadFromServer(){
     if(!data?.state)return false;
     state=data.state;cloudInitFileState();save();renderAll();
     if(!ce('area').classList.contains('hidden')&&typeof renderArea==='function')renderArea();
+    cloudMarkConfirmed(data);
     cloudTopActive();
     return true;
   }catch(e){console.warn('cloud reload',e);return false}
