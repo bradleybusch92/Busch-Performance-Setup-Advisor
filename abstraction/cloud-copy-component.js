@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const COPY_VERSION='v2026.09.30.12';
+const COPY_VERSION='v2026.09.30.13';
 const COPY_AREAS=['Front End','Engine','LF','RF','Cockpit','General Setup','LR','RR','Rear End'];
 let installed=false;
 
