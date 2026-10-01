@@ -1,0 +1,74 @@
+/* Purchase-needed component flag + vendor phone - v2026.10.01.31 */
+
+#partsPane .card.cloudNeedsPurchase{
+  border-color:#777!important;
+  background:#1d1d1d!important;
+}
+#partsPane .card.cloudNeedsPurchase:hover{
+  border-color:#9a9a9a!important;
+  background:#242424!important;
+}
+#partsPane .cloudPurchaseTag{
+  background:#d7d7d7!important;
+  border-color:#d7d7d7!important;
+  color:#111!important;
+  font-weight:850!important;
+  letter-spacing:.045em!important;
+}
+
+.cloudPurchaseFlagField .cloudPurchaseCheck{
+  min-height:39px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  padding:7px 10px!important;
+  border:1px solid #444!important;
+  border-radius:6px!important;
+  background:#111!important;
+  color:#ededed!important;
+  cursor:pointer!important;
+  text-transform:none!important;
+  letter-spacing:0!important;
+  font-size:13px!important;
+}
+.cloudPurchaseFlagField .cloudPurchaseCheck input{
+  width:18px!important;
+  height:18px!important;
+  min-width:18px!important;
+  margin:0!important;
+  padding:0!important;
+  flex:none!important;
+  outline:none!important;
+}
+.cloudPurchaseFlagField .cloudPurchaseCheck span{
+  line-height:1.2!important;
+}
+
+.cloudPurchaseDetailBadge{
+  display:inline-flex!important;
+  align-items:center!important;
+  width:max-content!important;
+  margin-top:6px!important;
+  padding:3px 7px!important;
+  border-radius:6px!important;
+  background:#d7d7d7!important;
+  color:#111!important;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  font-size:10px!important;
+  line-height:1!important;
+  font-weight:850!important;
+  letter-spacing:.045em!important;
+}
+.cloudPurchaseDetailBadge.hidden{display:none!important}
+.cloudPurchasePhoneLink{
+  color:#f2f2f2!important;
+  text-decoration:underline!important;
+  text-underline-offset:2px!important;
+}
+
+@media(max-width:650px){
+  .cloudPurchaseFlagField .cloudPurchaseCheck{
+    min-height:38px!important;
+    font-size:12px!important;
+  }
+}
