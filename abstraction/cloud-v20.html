@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#161616">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
+<title>Abstraction Owner's Manual</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#161616;color:#f2f2f2;font:14px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif}.boot{padding:24px;color:#aaa}.boot button{margin-top:12px;min-height:36px;border:1px solid #444;border-radius:8px;padding:7px 12px;background:#d9d9d9;color:#111;font:inherit;font-weight:800}.login{width:min(430px,calc(100% - 28px));margin:56px auto 0;padding:14px;border:1px solid #3a3a3a;border-radius:12px;background:#1b1b1b}.login h3{margin:0 0 10px}.login input,.login button{width:100%;margin-top:8px;min-height:38px;border:1px solid #444;border-radius:8px;padding:8px;background:#222;color:#f2f2f2;font:inherit}.login input{font-size:16px}.login button.primary{background:#d9d9d9;color:#111;font-weight:800}.status{margin-top:9px;color:#aaa;font-size:12px}
+</style></head><body>
+<div id="bootMsg" class="boot">Loading current cloud data…</div>
+<div id="login" class="login" style="display:none"><h3>Abstraction Owner's Manual</h3><input id="email" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Email or Username"><input id="password" type="password" autocomplete="current-password" placeholder="Password"><button id="signIn" class="primary" type="button">Sign In</button><button id="signUp" type="button">Create Account</button><div id="status" class="status"></div></div>
+<script>
+(async()=>{
+'use strict';
+const B_URL='https://gjlhegrcmaclikeoeonh.supabase.co',B_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9',B_STATE_KEY='abstractionOwnersManualWebV1',B_VER='20260930-2140-v20';
+const g=id=>document.getElementById(id);
+const bc=window.supabase.createClient(B_URL,B_KEY);
+async function freshCloudState(sess){
+  const r=await fetch(B_URL+'/rest/v1/rpc/get_owner_manual_state',{method:'POST',cache:'no-store',headers:{apikey:B_KEY,Authorization:'Bearer '+sess.access_token,'Content-Type':'application/json',Accept:'application/json','Cache-Control':'no-cache, no-store, max-age=0','Pragma':'no-cache'},body:'{}'});
+  if(!r.ok)throw new Error('Cloud load failed: '+r.status);
+  const rows=await r.json();
+  return rows[0]||null;
+}
+async function launch(sess){
+  g('bootMsg').style.display='block';g('bootMsg').textContent='Loading current cloud data…';g('login').style.display='none';
+  let bootState=null,bootUpdatedAt='';
+  try{
+    const data=await freshCloudState(sess);
+    bootState=data?.state||null;
+    bootUpdatedAt=data?.updated_at||'';
+    if(bootState)localStorage.setItem(B_STATE_KEY,JSON.stringify(bootState));
+    else localStorage.removeItem(B_STATE_KEY);
+  }catch(e){
+    console.warn('cloud bootstrap',e);
+    g('bootMsg').innerHTML='Could not load the current cloud Owner\'s Manual. A cached browser copy will not be opened because the cloud is the source of truth.<br><button type="button" id="retryCloud">Retry Cloud Load</button>';
+    g('retryCloud').onclick=()=>launch(sess);
+    return;
+  }
+  try{
+    const r=await fetch('index.html?v='+B_VER+'&t='+Date.now(),{cache:'no-store',credentials:'same-origin',headers:{'Cache-Control':'no-cache, no-store, max-age=0','Pragma':'no-cache'}});
+    if(!r.ok)throw new Error('App shell load failed: '+r.status);
+    let h=await r.text();
+    const payload=JSON.stringify(bootState).replace(/</g,'\\u003c');
+    const updatedPayload=JSON.stringify(bootUpdatedAt).replace(/</g,'\\u003c');
+    h=h.replace('</head>','<script>window.__ABSTRACTION_CLOUD_BOOT='+payload+';window.__ABSTRACTION_CLOUD_UPDATED_AT='+updatedPayload+';<\/script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script><link rel="stylesheet" href="cloud-enhance.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-advisor.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-account.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-desktop.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-desktop-tune.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-copy-component.css?v='+B_VER+'"><link rel="stylesheet" href="cloud-desktop-flat-v18.css"><link rel="stylesheet" href="cloud-mobile-flat-v19.css"><link rel="stylesheet" href="cloud-ui-v20.css"></head>');
+    const oldInit="let state;try{state=JSON.parse(localStorage.getItem(KEY))||makeSeed()}catch(e){state=makeSeed()}";
+    const newInit="let state;try{state=window.__ABSTRACTION_CLOUD_BOOT||makeSeed()}catch(e){state=makeSeed()}";
+    h=h.replace(oldInit,newInit);
+    h=h.replace('</body>','<script src="cloud-authoritative-v17.js"><\/script><script src="cloud-sync-pre.js?v='+B_VER+'"><\/script><script src="cloud-enhance.js?v='+B_VER+'"><\/script><script src="cloud-advisor.js?v='+B_VER+'"><\/script><script src="cloud-engine.js?v='+B_VER+'"><\/script><script src="cloud-account.js?v='+B_VER+'"><\/script><script src="cloud-login-ui.js?v='+B_VER+'"><\/script><script src="cloud-desktop.js?v='+B_VER+'"><\/script><script src="cloud-desktop-tune.js?v='+B_VER+'"><\/script><script src="cloud-copy-component.js?v='+B_VER+'"><\/script><script src="cloud-sync-v17.js"><\/script><script src="cloud-save-bridge-v17.js"><\/script><script src="cloud-labels-v20.js"><\/script></body>');
+    document.open();document.write(h);document.close();
+  }catch(e){
+    console.warn('app shell',e);
+    g('bootMsg').innerHTML='Could not load the Owner\'s Manual application files.<br><button type="button" id="retryCloud">Retry</button>';
+    g('retryCloud').onclick=()=>launch(sess);
+  }
+}
+async function showLogin(){g('bootMsg').style.display='none';g('login').style.display='block'}
+async function signIn(){
+  const identifier=g('email').value.trim();
+  const password=g('password').value;
+  if(!identifier||!password){g('status').textContent='Enter your email or username and password.';return}
+  g('status').textContent='Signing in…';
+  try{
+    let session=null;
+    if(identifier.includes('@')){
+      const {data,error}=await bc.auth.signInWithPassword({email:identifier,password});
+      if(error)throw error;
+      session=data.session;
+    }else{
+      const r=await fetch(B_URL+'/functions/v1/owner-manual-login',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json',apikey:B_KEY,Authorization:'Bearer '+B_KEY},body:JSON.stringify({identifier,password})});
+      const x=await r.json().catch(()=>({}));
+      if(!r.ok||!x.access_token||!x.refresh_token)throw new Error(x.error||'Invalid login credentials');
+      const {data,error}=await bc.auth.setSession({access_token:x.access_token,refresh_token:x.refresh_token});
+      if(error)throw error;
+      session=data.session;
+    }
+    if(!session)throw new Error('Invalid login credentials');
+    launch(session);
+  }catch(e){
+    console.warn('sign in',e);
+    g('status').textContent='Invalid email/username or password.';
+  }
+}
+g('signIn').onclick=signIn;
+g('password').onkeydown=e=>{if(e.key==='Enter')signIn()};
+g('signUp').onclick=async()=>{const email=g('email').value.trim();if(!email.includes('@')){g('status').textContent='Use your email address to create a new account.';return}g('status').textContent='Creating account…';const {data,error}=await bc.auth.signUp({email,password:g('password').value,options:{emailRedirectTo:location.origin+location.pathname}});if(error){g('status').textContent=error.message;return}if(data.session)launch(data.session);else g('status').textContent='Confirm your email, then sign in.'};
+const {data}=await bc.auth.getSession();if(data.session)launch(data.session);else showLogin();
+})();
+</script></body></html>
