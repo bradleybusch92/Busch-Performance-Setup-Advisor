@@ -50,11 +50,18 @@ async function getSession(){
 async function freshCloud(){
   const sess=await getSession();
   if(!sess)throw new Error('No active login session');
-  const nonce=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
-  const q='select=state,updated_at&user_id=eq.'+encodeURIComponent(sess.user.id)+'&limit=1&_cb='+encodeURIComponent(nonce);
-  const r=await fetch(SB_URL+'/rest/v1/owner_manuals?'+q,{
+  const r=await fetch(SB_URL+'/rest/v1/rpc/get_owner_manual_state',{
+    method:'POST',
     cache:'no-store',
-    headers:{apikey:SB_KEY,Authorization:'Bearer '+sess.access_token,Accept:'application/json','Cache-Control':'no-cache, no-store, max-age=0','Pragma':'no-cache'}
+    headers:{
+      apikey:SB_KEY,
+      Authorization:'Bearer '+sess.access_token,
+      'Content-Type':'application/json',
+      Accept:'application/json',
+      'Cache-Control':'no-cache, no-store, max-age=0',
+      Pragma:'no-cache'
+    },
+    body:'{}'
   });
   if(!r.ok)throw new Error('Cloud read failed: '+r.status);
   const rows=await r.json();
