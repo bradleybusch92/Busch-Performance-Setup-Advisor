@@ -15,12 +15,13 @@
 <script>
 (async()=>{
 'use strict';
-const B_URL='https://gjlhegrcmaclikeoeonh.supabase.co',B_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9',B_STATE_KEY='abstractionOwnersManualWebV1',B_VER='20260930-2025-v16';
+const B_URL='https://gjlhegrcmaclikeoeonh.supabase.co',B_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9',B_STATE_KEY='abstractionOwnersManualWebV1',B_VER='20260930-2030-v17';
 const g=id=>document.getElementById(id);
 const bc=window.supabase.createClient(B_URL,B_KEY);
 async function freshCloudState(sess){
-  const q='select=state,updated_at&user_id=eq.'+encodeURIComponent(sess.user.id)+'&limit=1';
-  const r=await fetch(B_URL+'/rest/v1/owner_manuals?'+q,{cache:'no-store',headers:{apikey:B_KEY,Authorization:'Bearer '+sess.access_token,Accept:'application/json','Cache-Control':'no-cache','Pragma':'no-cache'}});
+  const nonce=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
+  const q='select=state,updated_at&user_id=eq.'+encodeURIComponent(sess.user.id)+'&limit=1&_cb='+encodeURIComponent(nonce);
+  const r=await fetch(B_URL+'/rest/v1/owner_manuals?'+q,{cache:'no-store',headers:{apikey:B_KEY,Authorization:'Bearer '+sess.access_token,Accept:'application/json','Cache-Control':'no-cache, no-store, max-age=0','Pragma':'no-cache'}});
   if(!r.ok)throw new Error('Cloud load failed: '+r.status);
   const rows=await r.json();
   return rows[0]||null;
@@ -41,7 +42,7 @@ async function launch(sess){
     return;
   }
   try{
-    const r=await fetch('index.html?v='+B_VER+'&t='+Date.now(),{cache:'no-store',credentials:'same-origin',headers:{'Cache-Control':'no-cache','Pragma':'no-cache'}});
+    const r=await fetch('index.html?v='+B_VER+'&t='+Date.now(),{cache:'no-store',credentials:'same-origin',headers:{'Cache-Control':'no-cache, no-store, max-age=0','Pragma':'no-cache'}});
     if(!r.ok)throw new Error('App shell load failed: '+r.status);
     let h=await r.text();
     const payload=JSON.stringify(bootState).replace(/</g,'\\u003c');
@@ -50,7 +51,7 @@ async function launch(sess){
     const oldInit="let state;try{state=JSON.parse(localStorage.getItem(KEY))||makeSeed()}catch(e){state=makeSeed()}";
     const newInit="let state;try{state=window.__ABSTRACTION_CLOUD_BOOT||makeSeed()}catch(e){state=makeSeed()}";
     h=h.replace(oldInit,newInit);
-    h=h.replace('</body>','<script src="cloud-authoritative.js?v='+B_VER+'"><\/script><script src="cloud-sync-pre.js?v='+B_VER+'"><\/script><script src="cloud-enhance.js?v='+B_VER+'"><\/script><script src="cloud-advisor.js?v='+B_VER+'"><\/script><script src="cloud-engine.js?v='+B_VER+'"><\/script><script src="cloud-account.js?v='+B_VER+'"><\/script><script src="cloud-login-ui.js?v='+B_VER+'"><\/script><script src="cloud-desktop.js?v='+B_VER+'"><\/script><script src="cloud-desktop-tune.js?v='+B_VER+'"><\/script><script src="cloud-copy-component.js?v='+B_VER+'"><\/script><script src="cloud-sync.js?v='+B_VER+'"><\/script><script src="cloud-save-bridge.js?v='+B_VER+'"><\/script></body>');
+    h=h.replace('</body>','<script src="cloud-authoritative-v17.js"><\/script><script src="cloud-sync-pre.js?v='+B_VER+'"><\/script><script src="cloud-enhance.js?v='+B_VER+'"><\/script><script src="cloud-advisor.js?v='+B_VER+'"><\/script><script src="cloud-engine.js?v='+B_VER+'"><\/script><script src="cloud-account.js?v='+B_VER+'"><\/script><script src="cloud-login-ui.js?v='+B_VER+'"><\/script><script src="cloud-desktop.js?v='+B_VER+'"><\/script><script src="cloud-desktop-tune.js?v='+B_VER+'"><\/script><script src="cloud-copy-component.js?v='+B_VER+'"><\/script><script src="cloud-sync-v17.js"><\/script><script src="cloud-save-bridge-v17.js"><\/script></body>');
     document.open();document.write(h);document.close();
   }catch(e){
     console.warn('app shell',e);
