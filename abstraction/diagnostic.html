@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Abstraction Diagnostic</title>
+<style>html,body{margin:0;background:#161616;color:#f2f2f2;font:16px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif}main{max-width:720px;margin:30px auto;padding:18px}.card{border:1px solid #444;background:#1d1d1d;border-radius:10px;padding:16px}.row{padding:8px 0;border-bottom:1px solid #333}.row:last-child{border-bottom:0}.ok{color:#b7e3b7}.bad{color:#ffaaaa}.wait{color:#ccc}code{word-break:break-all}</style>
+</head><body><main><div class="card"><h2 style="margin-top:0">Abstraction Diagnostic</h2><div id="html" class="row ok">1. HTML loaded</div><div id="js" class="row wait">2. JavaScript waiting…</div><div id="shell" class="row wait">3. index.html fetch waiting…</div><div id="cdn" class="row wait">4. Supabase library waiting…</div><div id="auth" class="row wait">5. Supabase session check waiting…</div><div id="rpc" class="row wait">6. Cloud RPC waiting…</div></div></main>
+<script>
+(function(){
+'use strict';
+const set=(id,text,ok)=>{const e=document.getElementById(id);e.textContent=text;e.className='row '+(ok===true?'ok':ok===false?'bad':'wait')};
+set('js','2. JavaScript running',true);
+fetch('index.html?diag='+Date.now(),{cache:'no-store'}).then(r=>{set('shell','3. index.html fetch: HTTP '+r.status+(r.ok?' OK':' FAIL'),r.ok);return r.text()}).then(t=>{if(t)document.getElementById('shell').textContent+=' ('+t.length+' bytes)'}).catch(e=>set('shell','3. index.html fetch failed: '+e.message,false));
+const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=async()=>{
+  set('cdn','4. Supabase library loaded',true);
+  try{
+    const url='https://gjlhegrcmaclikeoeonh.supabase.co';
+    const key='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9';
+    const c=window.supabase.createClient(url,key);
+    const {data,error}=await c.auth.getSession();
+    if(error)throw error;
+    const sess=data&&data.session;
+    set('auth','5. Supabase session check: '+(sess?'signed in':'no active session'),true);
+    if(!sess){set('rpc','6. Cloud RPC skipped because there is no active session',null);return}
+    const r=await fetch(url+'/rest/v1/rpc/get_owner_manual_state',{method:'POST',cache:'no-store',headers:{apikey:key,Authorization:'Bearer '+sess.access_token,'Content-Type':'application/json',Accept:'application/json'},body:'{}'});
+    set('rpc','6. Cloud RPC: HTTP '+r.status+(r.ok?' OK':' FAIL'),r.ok);
+  }catch(e){set('auth','5. Supabase/session error: '+e.message,false);set('rpc','6. Cloud RPC not reached',false)}
+};
+s.onerror=()=>{set('cdn','4. Supabase library failed to load',false);set('auth','5. Session check not reached',false);set('rpc','6. Cloud RPC not reached',false)};
+document.head.appendChild(s);
+setTimeout(()=>{if(document.getElementById('cdn').classList.contains('wait'))set('cdn','4. Supabase library still not loaded after 8 seconds',false)},8000);
+})();
+</script></body></html>
