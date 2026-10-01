@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const BRIDGE_VERSION='v2026.09.30.15';
+const BRIDGE_VERSION='v2026.09.30.16';
 const SB_URL='https://gjlhegrcmaclikeoeonh.supabase.co';
 const SB_KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9';
 const BUCKET='owner-manual-files';
@@ -96,7 +96,6 @@ async function cleanupFiles(paths){
   try{await client.storage.from(BUCKET).remove(paths)}catch(e){console.warn('component file cleanup',e)}
 }
 
-/* Capture Save clicks so Safari cannot fall back to an older or delayed handler. */
 document.addEventListener('click',async e=>{
   const btn=e.target?.closest?.('#cloudBottomSave,#cloudSetupSave');
   if(!btn)return;
@@ -110,7 +109,6 @@ document.addEventListener('click',async e=>{
   btn.textContent=oldText||'Save';
 },true);
 
-/* Component Save: own the complete mutation + cloud write in one handler. */
 document.addEventListener('submit',async e=>{
   const form=e.target;
   if(form?.id!=='editForm')return;
@@ -137,7 +135,6 @@ document.addEventListener('submit',async e=>{
   await directSave();
 },true);
 
-/* Component Delete: persist the deletion immediately, then clean up stored files. */
 document.addEventListener('click',async e=>{
   const btn=e.target?.closest?.('#deleteBtn');
   if(!btn)return;
