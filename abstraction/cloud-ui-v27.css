@@ -1,0 +1,179 @@
+/* Owner's Manual UI consistency polish - v2026.10.01.27
+   Presentation only. No state, sync, save, or loader architecture changes. */
+
+/* Two-radius system: controls = 6px, larger cards/panels = 10px. */
+.btn,
+button.btn,
+.tab,
+input,
+select,
+textarea,
+.x,
+.cloudTopNav button,
+.cloudTopAdd,
+.cloudFileActions .btn,
+.cloudAttachToolbar .btn{
+  border-radius:6px!important;
+}
+.profiles,
+.panel,
+.card,
+.sys,
+.table,
+dialog,
+.box,
+.cloudFileCard,
+.cloudFilePreview,
+.cloudFileEmpty,
+.cloudToast{
+  border-radius:10px!important;
+}
+#home.panel{
+  border-radius:0!important;
+}
+#home .zone{
+  border-radius:6px!important;
+}
+
+/* Area-page tabs: stronger, cleaner active state matching the Main Menu controls. */
+.tabs{
+  gap:5px!important;
+}
+.tab{
+  background:#191919!important;
+  color:#a8a8a8!important;
+  border:1px solid #3a3a3a!important;
+  font-weight:650!important;
+}
+.tab.active{
+  background:#d7d7d7!important;
+  color:#0d0d0d!important;
+  border-color:#d7d7d7!important;
+  font-weight:800!important;
+}
+
+/* Setup/input focus: clear enough to find instantly, still flat grayscale. */
+input:focus,
+select:focus,
+textarea:focus,
+#setupPane .row input:focus,
+#setupPane .row select:focus,
+#setupPane .row textarea:focus{
+  background:#151515!important;
+  border-color:#8a8a8a!important;
+  outline:1px solid #5d5d5d!important;
+  outline-offset:1px!important;
+  box-shadow:none!important;
+}
+
+/* Parts & Components stay card-based, but with a tighter technical hierarchy. */
+#partsPane .parts{
+  gap:8px!important;
+}
+#partsPane .card{
+  background:#171717!important;
+  border:1px solid #363636!important;
+  padding:10px 11px!important;
+  box-shadow:none!important;
+}
+#partsPane .card:hover{
+  background:#1d1d1d!important;
+  border-color:#454545!important;
+}
+#partsPane .card b{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  font-size:14px!important;
+  line-height:1.2!important;
+  font-weight:800!important;
+  letter-spacing:-.01em!important;
+  color:#efefef!important;
+}
+#partsPane .card .meta{
+  margin-top:3px!important;
+  font-size:11px!important;
+  line-height:1.3!important;
+  color:#929292!important;
+}
+#partsPane .card .tag{
+  margin-top:6px!important;
+  padding:2px 6px!important;
+  border-color:#4a4a4a!important;
+  color:#bdbdbd!important;
+  font-size:9.5px!important;
+}
+
+/* Consistent heading language across navigation sections and dialogs. */
+#home .cloudMainHead b,
+.areaTop h2,
+#systems>h2,
+#index>h2,
+.mh b,
+.cloudEditFilesTitle,
+.box h4,
+.profiles label{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+.areaTop h2,
+#systems>h2,
+#index>h2,
+.mh b{
+  font-weight:800!important;
+  letter-spacing:-.015em!important;
+}
+.profiles label,
+.cloudEditFilesTitle,
+.box h4{
+  font-weight:750!important;
+  letter-spacing:.045em!important;
+  text-transform:uppercase!important;
+  color:#989898!important;
+}
+
+/* Top bar micro-polish: consistent vertical centering and breathing room, no scrolling. */
+.cloudTopbar{
+  align-items:center!important;
+  overflow-x:hidden!important;
+}
+.cloudTopLogo{
+  object-position:left center!important;
+}
+.cloudTopNav,
+.cloudTopAdd{
+  align-self:center!important;
+}
+.cloudTopNav button,
+.cloudTopAdd{
+  min-height:28px!important;
+  line-height:1!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+
+@media(max-width:650px){
+  .cloudTopbar{
+    height:40px!important;
+    padding:3px 5px!important;
+    gap:3px!important;
+  }
+  .cloudTopLogo{
+    width:78px!important;
+    height:32px!important;
+  }
+  .cloudTopNav{
+    gap:3px!important;
+  }
+  .cloudTopNav button,
+  .cloudTopAdd{
+    min-height:27px!important;
+    padding:3px 5px!important;
+    font-size:9.5px!important;
+  }
+
+  #partsPane .card{
+    padding:10px!important;
+  }
+  #partsPane .card b{
+    font-size:13.5px!important;
+  }
+}
