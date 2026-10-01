@@ -1,0 +1,16 @@
+/* Owner's Manual appearance polish - v2026.10.01.25
+   Presentation only. No state, sync, save, or loader architecture changes. */
+
+/* On mobile/tablet, General was intentionally larger in v22. Bring every
+   centerline button up to that same type size so the stack is uniform. */
+@media(max-width:1050px){
+  #home .zone[data-area="Front End"],
+  #home .zone[data-area="Engine"],
+  #home .zone[data-area="Cockpit"],
+  #home .zone[data-area="Rear End"]{
+    font-size:clamp(18px,5vw,24px)!important;
+  }
+  #home .zone[data-area="General Setup"]::after{
+    font-size:clamp(18px,5vw,24px)!important;
+  }
+}
