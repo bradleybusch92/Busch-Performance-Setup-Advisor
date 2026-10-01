@@ -140,19 +140,19 @@ function installSaveHandler(){
 }
 
 function install(){
-  if(window.__cloudPurchaseV31Installed)return;
-  if(!installEditFields()||!installDetailFields())return;
+  if(window.__cloudPurchaseV31Installed)return true;
+  if(!installEditFields()||!installDetailFields())return false;
   window.__cloudPurchaseV31Installed=true;
   installFunctionWrappers();
   installSaveHandler();
+  return true;
 }
 
 if(!install()){
   const obs=new MutationObserver(()=>{
-    install();
-    if(window.__cloudPurchaseV31Installed)obs.disconnect();
+    if(install())obs.disconnect();
   });
   obs.observe(document.documentElement,{childList:true,subtree:true});
-  setTimeout(()=>{install();if(window.__cloudPurchaseV31Installed)obs.disconnect()},1200);
+  setTimeout(()=>{if(install())obs.disconnect()},1200);
 }
 })();
