@@ -1,0 +1,10 @@
+/* Purchase flag interaction feedback - v2026.10.01.33 */
+.cloudPurchaseFlagField .cloudPurchaseCheck input[type="checkbox"]{
+  accent-color:#d7d7d7!important;
+  cursor:pointer!important;
+}
+.cloudPurchaseFlagField .cloudPurchaseCheck.checked{
+  background:#222!important;
+  border-color:#7a7a7a!important;
+  color:#fff!important;
+}
