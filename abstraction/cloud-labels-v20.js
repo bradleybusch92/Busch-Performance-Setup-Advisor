@@ -16,11 +16,13 @@ function applyLabels(){
   });
 
   const version=document.getElementById('cloudVersion');
-  if(version)version.textContent=VERSION;
+  if(version&&version.textContent!==VERSION)version.textContent=VERSION;
 }
 
 applyLabels();
-const observer=new MutationObserver(applyLabels);
-observer.observe(document.documentElement,{childList:true,subtree:true,characterData:true});
-[500,1200,2500,5000,9000,14000].forEach(ms=>setTimeout(applyLabels,ms));
+[300,800,1500,3000,6000,10000].forEach(ms=>setTimeout(applyLabels,ms));
+
+/* Re-apply after user interaction so dynamically rendered area titles stay display-only "General". */
+document.addEventListener('click',()=>setTimeout(applyLabels,0),true);
+document.addEventListener('change',()=>setTimeout(applyLabels,0),true);
 })();
