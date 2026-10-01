@@ -53,8 +53,7 @@ async function directSave(){
     state.__cloudSavedAt=new Date().toISOString();
     if(typeof save==='function')save();
     const outgoing=clone(state);
-    const nonce=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
-    const url=SB_URL+'/rest/v1/owner_manuals?on_conflict=user_id&select=state%2Cupdated_at&_cb='+encodeURIComponent(nonce);
+    const url=SB_URL+'/rest/v1/owner_manuals?on_conflict=user_id&select=state%2Cupdated_at';
     const r=await fetch(url,{
       method:'POST',
       cache:'no-store',
