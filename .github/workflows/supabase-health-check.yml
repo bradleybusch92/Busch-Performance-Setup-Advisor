@@ -6,6 +6,11 @@ on:
     # GitHub Actions cron uses UTC.
     - cron: '17 3,11,19 * * *'
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/supabase-health-check.yml'
 
 permissions:
   contents: read
@@ -23,7 +28,7 @@ jobs:
           URL='https://gjlhegrcmaclikeoeonh.supabase.co/rest/v1/rpc/get_owner_manual_state'
           KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9'
 
-          http_code="$(curl             --silent             --show-error             --retry 2             --retry-delay 3             --output /tmp/abstraction-health.json             --write-out '%{http_code}'             --request POST             --header "apikey: $KEY"             --header "Authorization: Bearer $KEY"             --header 'Content-Type: application/json'             --data '{}'             "$URL")"
+          http_code="$(curl --silent --show-error --retry 2 --retry-delay 3 --output /tmp/abstraction-health.json --write-out '%{http_code}' --request POST --header "apikey: $KEY" --header "Authorization: Bearer $KEY" --header 'Content-Type: application/json' --data '{}' "$URL")"
 
           echo "Supabase health check HTTP status: $http_code"
 
