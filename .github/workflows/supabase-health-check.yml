@@ -1,0 +1,36 @@
+name: Keep Abstraction Supabase Active
+
+on:
+  schedule:
+    # Three small database/API requests per day.
+    # GitHub Actions cron uses UTC.
+    - cron: '17 3,11,19 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  supabase-health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call read-only Owner's Manual RPC
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          URL='https://gjlhegrcmaclikeoeonh.supabase.co/rest/v1/rpc/get_owner_manual_state'
+          KEY='sb_publishable_bh-dXv2tB7j-VH9qqTih6g_BAK5GCH9'
+
+          http_code="$(curl             --silent             --show-error             --retry 2             --retry-delay 3             --output /tmp/abstraction-health.json             --write-out '%{http_code}'             --request POST             --header "apikey: $KEY"             --header "Authorization: Bearer $KEY"             --header 'Content-Type: application/json'             --data '{}'             "$URL")"
+
+          echo "Supabase health check HTTP status: $http_code"
+
+          if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
+            echo "Health check failed:"
+            cat /tmp/abstraction-health.json
+            exit 1
+          fi
+
+          echo "Abstraction Supabase project responded successfully."
